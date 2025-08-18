@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: crd-manager
+  namespace: projectsveltos
+  annotations:
+    "helm.sh/hook": "pre-upgrade,pre-rollback"
+    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: crd-manager
+  annotations:
+    "helm.sh/hook": "pre-upgrade,pre-rollback"
+    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
+rules:
+- apiGroups:
+  - apiextensions.k8s.io
+  resources:
+  - customresourcedefinitions
+  verbs:
+  - get
+  - list
+  - watch
+  - update
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: crd-manager-rolebinding
+  annotations:
+    "helm.sh/hook": "pre-upgrade,pre-rollback"
+    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: crd-manager
+subjects:
+- kind: ServiceAccount
+  name: crd-manager
+  namespace: projectsveltos
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: crd-manager-job
+  namespace: projectsveltos
+  annotations:
+    "helm.sh/hook": "pre-upgrade,pre-rollback"
+    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
+spec:
+  ttlSecondsAfterFinished: 240
+  template:
+    spec:
+      containers:
+      - name: crd-manager
+        image: docker.io/projectsveltos/crd-manager:v1.0.1
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+      serviceAccountName: crd-manager
+      restartPolicy: Never
+  backoffLimit: 4
+---
