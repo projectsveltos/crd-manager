@@ -21,6 +21,7 @@ rules:
   - customresourcedefinitions
   verbs:
   - get
+  - create
   - list
   - watch
   - update
@@ -67,6 +68,6 @@ spec:
             drop:
             - ALL
       serviceAccountName: crd-manager
-      restartPolicy: Never
+      restartPolicy: OnFailure
   backoffLimit: 4
 ---
