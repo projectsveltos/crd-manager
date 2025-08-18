@@ -164,19 +164,12 @@ prepare-cluster:
 	@echo 'Load projectsveltos image into cluster'
 	$(MAKE) load-image
 
-	@echo 'Install libsveltos CRDs'
-	$(KUBECTL) apply -f https://raw.githubusercontent.com/projectsveltos/libsveltos/$(TAG)/manifests/apiextensions.k8s.io_v1_customresourcedefinition_debuggingconfigurations.lib.projectsveltos.io.yaml
-	$(KUBECTL) apply -f https://raw.githubusercontent.com/projectsveltos/libsveltos/$(TAG)/manifests/apiextensions.k8s.io_v1_customresourcedefinition_sveltosclusters.lib.projectsveltos.io.yaml
-	$(KUBECTL) apply -f https://raw.githubusercontent.com/projectsveltos/libsveltos/$(TAG)/manifests/apiextensions.k8s.io_v1_customresourcedefinition_classifiers.lib.projectsveltos.io.yaml
-
-
-	# Install sveltoscluster-manager
-	$(KUBECTL) apply -f https://raw.githubusercontent.com/projectsveltos/sveltoscluster-manager/$(TAG)/manifest/manifest.yaml
-
 
 .PHONY: create-cluster
 create-cluster: $(KIND) $(KUBECTL) manifests ## Create a new kind cluster designed for development
 	$(MAKE) prepare-cluster
+
+	$(KUBECTL) create ns projectsveltos
 
 	$(MAKE) deploy-projectsveltos
 
@@ -195,11 +188,6 @@ fv: $(KUBECTL) $(GINKGO) ## Run Sveltos Controller tests using existing cluster
 deploy-projectsveltos: # Install projectsveltos crd-manager
 	@echo 'Install projectsveltos crd-manager'
 	sed -e 's@image: .*@image: '"$(CONTROLLER_IMG):$(TAG)"'@' ./k8s/manifest.yaml  | $(KUBECTL) apply -f -
-
-deploy-projectsveltos-service-account-token-mode: $(KUBECTL)
-	sed -e 's@image: .*@image: '"$(CONTROLLER_IMG):$(TAG)"'@' ./k8s/manifest.yaml > test/manifest.yaml
-	sed -e "s/service-account-token=false/service-account-token=true/g"  test/manifest.yaml > test/patched_manifest.yaml
-	$(KUBECTL) apply -f test/patched_manifest.yaml
 
 sveltos-crds:
 	@echo "Downloading sveltos crds"
