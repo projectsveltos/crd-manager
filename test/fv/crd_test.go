@@ -36,5 +36,14 @@ var _ = Describe("Sveltos CRDs", func() {
 				&sveltosCluster)
 			return err == nil
 		}, timeout, pollingInterval).Should(BeTrue())
+
+		By("Verify SveltosLicense CRD is deployed")
+		Eventually(func() bool {
+			sveltosCluster := apiextensionsv1.CustomResourceDefinition{}
+			err := k8sClient.Get(context.TODO(),
+				types.NamespacedName{Name: "sveltoslicenses.lib.projectsveltos.io"},
+				&sveltosCluster)
+			return err == nil
+		}, timeout, pollingInterval).Should(BeTrue())
 	})
 })

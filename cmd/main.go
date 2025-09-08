@@ -102,21 +102,25 @@ func deploySveltosCRDs(ctx context.Context, c client.Client, logger logr.Logger)
 		return err
 	}
 
+	var detectedErrors error
 	for _, obj := range objs {
 		u, err := k8s_utils.GetUnstructured([]byte(obj))
 		if err != nil {
 			logger.V(logs.LogInfo).Info(fmt.Sprintf("failed to get default Sveltos CRD instance: %v", err))
-			return err
+			detectedErrors = err
+			continue
 		}
 
+		logger.V(logs.LogInfo).Info(fmt.Sprintf("considering Sveltos CRD %s", u.GetName()))
 		err = processCustomResourceDefinition(ctx, c, u, logger)
 		if err != nil {
 			logger.V(logs.LogInfo).Info(fmt.Sprintf("failed to update Sveltos CRD %s instance: %v",
 				u.GetName(), err))
+			detectedErrors = err
 		}
 	}
 
-	return nil
+	return detectedErrors
 }
 
 func processCustomResourceDefinition(ctx context.Context, c client.Client, u *unstructured.Unstructured,
@@ -128,6 +132,7 @@ func processCustomResourceDefinition(ctx context.Context, c client.Client, u *un
 		customResourceDefinition)
 	if err != nil {
 		if apierrors.IsNotFound(err) {
+			logger.V(logs.LogInfo).Info(fmt.Sprintf("creating Sveltos CRD %s", u.GetName()))
 			return c.Create(ctx, u)
 		}
 		logger.V(logs.LogInfo).Info(fmt.Sprintf("failed to get default Sveltos CRD instance: %v", err))
@@ -136,6 +141,7 @@ func processCustomResourceDefinition(ctx context.Context, c client.Client, u *un
 
 	u.SetResourceVersion(customResourceDefinition.GetResourceVersion())
 	if !isManagedByHelm(u) {
+		logger.V(logs.LogInfo).Info(fmt.Sprintf("updating Sveltos CRD %s", u.GetName()))
 		return c.Update(ctx, u)
 	}
 
