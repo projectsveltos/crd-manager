@@ -20,7 +20,7 @@ var crdsYAML = []byte(`apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: accessrequests.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -157,7 +157,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: classifierreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -243,7 +243,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: classifiers.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -608,7 +608,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: clusterhealthchecks.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -1045,7 +1045,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: clustersets.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -1291,7 +1291,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: configurationbundles.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -1407,7 +1407,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: configurationgroups.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -1740,6 +1740,32 @@ spec:
                   is healthy
                 items:
                   properties:
+                    evaluateCEL:
+                      description: |-
+                        EvaluateCEL contains a list of named CEL (Common Expression Language) rules.
+                        Each rule will be evaluated in order against each object selected based on
+                        the criteria defined above. Each rule's expression must return a boolean value
+                        indicating whether the object is a match.
+
+                        Evaluation stops at the first rule that returns true; subsequent
+                        rules will not be evaluated.
+                      items:
+                        description: CELRule defines a named CEL rule used in EvaluateCEL.
+                        properties:
+                          name:
+                            description: Name is a human-readable identifier for the
+                              rule.
+                            type: string
+                          rule:
+                            description: |-
+                              Rule is the CEL (Common Expression Language) expression to evaluate.
+                              It must return a bool
+                            type: string
+                        required:
+                        - name
+                        - rule
+                        type: object
+                      type: array
                     featureID:
                       description: |-
                         FeatureID is an indentifier of the feature (Helm/Kustomize/Resources)
@@ -1870,7 +1896,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: debuggingconfigurations.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -1955,7 +1981,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: eventreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2098,7 +2124,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: eventsources.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2291,7 +2317,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: healthcheckreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2443,7 +2469,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: healthchecks.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2598,7 +2624,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: reloaderreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2707,7 +2733,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: reloaders.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2782,7 +2808,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: resourcesummaries.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3195,7 +3221,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: rolerequests.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3470,7 +3496,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: sets.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3716,7 +3742,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: sveltosclusters.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -4154,7 +4180,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: sveltoslicenses.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -4236,7 +4262,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.18.0
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: techsupports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -4789,7 +4815,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.18.0
+        controller-gen.kubebuilder.io/version: v0.19.0
     name: clusterconfigurations.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -4888,16 +4914,18 @@ spec:
                                                         description: Resources is a list of resources deployed in the Cluster.
                                                         items:
                                                             properties:
+                                                                deploymentType:
+                                                                    default: Remote
+                                                                    description: |-
+                                                                        DeploymentType indicates whether resources is deployed
+                                                                        into the management cluster (local) or the managed cluster (remote)
+                                                                    enum:
+                                                                        - Local
+                                                                        - Remote
+                                                                    type: string
                                                                 group:
                                                                     description: Group of the resource deployed in the Cluster.
                                                                     type: string
-                                                                ignoreForConfigurationDrift:
-                                                                    default: false
-                                                                    description: |-
-                                                                        IgnoreForConfigurationDrift indicates to not track resource
-                                                                        for configuration drift detection.
-                                                                        This field has a meaning only when mode is ContinuousWithDriftDetection
-                                                                    type: boolean
                                                                 kind:
                                                                     description: Kind of the resource deployed in the Cluster.
                                                                     minLength: 1
@@ -5000,16 +5028,18 @@ spec:
                                                         description: Resources is a list of resources deployed in the Cluster.
                                                         items:
                                                             properties:
+                                                                deploymentType:
+                                                                    default: Remote
+                                                                    description: |-
+                                                                        DeploymentType indicates whether resources is deployed
+                                                                        into the management cluster (local) or the managed cluster (remote)
+                                                                    enum:
+                                                                        - Local
+                                                                        - Remote
+                                                                    type: string
                                                                 group:
                                                                     description: Group of the resource deployed in the Cluster.
                                                                     type: string
-                                                                ignoreForConfigurationDrift:
-                                                                    default: false
-                                                                    description: |-
-                                                                        IgnoreForConfigurationDrift indicates to not track resource
-                                                                        for configuration drift detection.
-                                                                        This field has a meaning only when mode is ContinuousWithDriftDetection
-                                                                    type: boolean
                                                                 kind:
                                                                     description: Kind of the resource deployed in the Cluster.
                                                                     minLength: 1
@@ -5060,7 +5090,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.18.0
+        controller-gen.kubebuilder.io/version: v0.19.0
     name: clusterprofiles.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -5203,10 +5233,11 @@ spec:
                                 type: boolean
                             dependsOn:
                                 description: |-
-                                    DependsOn specifies a list of other ClusterProfiles that this instance depends on.
-                                    In any managed cluster that matches this ClusterProfile, the add-ons and applications
-                                    defined in this instance will not be deployed until all add-ons and applications in the
-                                    ClusterProfiles listed as dependencies are deployed.
+                                    DependsOn specifies a list of other profiles that this instance depends on.
+                                    A ClusterProfile can only depend on other ClusterProfiles, and a Profile can
+                                    only depend on other Profiles.
+                                    The add-ons and applications defined in this instance will not be deployed
+                                    until all add-ons and applications in the profiles listed as dependencies are deployed.
                                 items:
                                     type: string
                                 type: array
@@ -5372,6 +5403,9 @@ spec:
                                                         type: string
                                                     description: Labels that would be added to release metadata.
                                                     type: object
+                                                passCredentialsAll:
+                                                    description: PassCredentialsAll is the flag to pass credentials to all domains
+                                                    type: boolean
                                                 skipCRDs:
                                                     default: false
                                                     description: |-
@@ -5648,6 +5682,14 @@ spec:
                                     be run on those paths and the outcome will be deployed.
                                 items:
                                     properties:
+                                        components:
+                                            description: |-
+                                                Components is a list of paths to Kustomize components. These paths are relative to the
+                                                Path field and are included in the Kustomize build to provide reusable configuration logic.
+                                                The paths can be static or leverage Go templates for dynamic customization.
+                                            items:
+                                                type: string
+                                            type: array
                                         deploymentType:
                                             default: Remote
                                             description: |-
@@ -6078,6 +6120,31 @@ spec:
                                     is healthy
                                 items:
                                     properties:
+                                        evaluateCEL:
+                                            description: |-
+                                                EvaluateCEL contains a list of named CEL (Common Expression Language) rules.
+                                                Each rule will be evaluated in order against each object selected based on
+                                                the criteria defined above. Each rule's expression must return a boolean value
+                                                indicating whether the object is a match.
+
+                                                Evaluation stops at the first rule that returns true; subsequent
+                                                rules will not be evaluated.
+                                            items:
+                                                description: CELRule defines a named CEL rule used in EvaluateCEL.
+                                                properties:
+                                                    name:
+                                                        description: Name is a human-readable identifier for the rule.
+                                                        type: string
+                                                    rule:
+                                                        description: |-
+                                                            Rule is the CEL (Common Expression Language) expression to evaluate.
+                                                            It must return a bool
+                                                        type: string
+                                                required:
+                                                    - name
+                                                    - rule
+                                                type: object
+                                            type: array
                                         featureID:
                                             description: |-
                                                 FeatureID is an indentifier of the feature (Helm/Kustomize/Resources)
@@ -6341,7 +6408,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.18.0
+        controller-gen.kubebuilder.io/version: v0.19.0
     name: clusterreports.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -6635,7 +6702,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.18.0
+        controller-gen.kubebuilder.io/version: v0.19.0
     name: clustersummaries.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -6812,10 +6879,11 @@ spec:
                                         type: boolean
                                     dependsOn:
                                         description: |-
-                                            DependsOn specifies a list of other ClusterProfiles that this instance depends on.
-                                            In any managed cluster that matches this ClusterProfile, the add-ons and applications
-                                            defined in this instance will not be deployed until all add-ons and applications in the
-                                            ClusterProfiles listed as dependencies are deployed.
+                                            DependsOn specifies a list of other profiles that this instance depends on.
+                                            A ClusterProfile can only depend on other ClusterProfiles, and a Profile can
+                                            only depend on other Profiles.
+                                            The add-ons and applications defined in this instance will not be deployed
+                                            until all add-ons and applications in the profiles listed as dependencies are deployed.
                                         items:
                                             type: string
                                         type: array
@@ -6981,6 +7049,9 @@ spec:
                                                                 type: string
                                                             description: Labels that would be added to release metadata.
                                                             type: object
+                                                        passCredentialsAll:
+                                                            description: PassCredentialsAll is the flag to pass credentials to all domains
+                                                            type: boolean
                                                         skipCRDs:
                                                             default: false
                                                             description: |-
@@ -7257,6 +7328,14 @@ spec:
                                             be run on those paths and the outcome will be deployed.
                                         items:
                                             properties:
+                                                components:
+                                                    description: |-
+                                                        Components is a list of paths to Kustomize components. These paths are relative to the
+                                                        Path field and are included in the Kustomize build to provide reusable configuration logic.
+                                                        The paths can be static or leverage Go templates for dynamic customization.
+                                                    items:
+                                                        type: string
+                                                    type: array
                                                 deploymentType:
                                                     default: Remote
                                                     description: |-
@@ -7687,6 +7766,31 @@ spec:
                                             is healthy
                                         items:
                                             properties:
+                                                evaluateCEL:
+                                                    description: |-
+                                                        EvaluateCEL contains a list of named CEL (Common Expression Language) rules.
+                                                        Each rule will be evaluated in order against each object selected based on
+                                                        the criteria defined above. Each rule's expression must return a boolean value
+                                                        indicating whether the object is a match.
+
+                                                        Evaluation stops at the first rule that returns true; subsequent
+                                                        rules will not be evaluated.
+                                                    items:
+                                                        description: CELRule defines a named CEL rule used in EvaluateCEL.
+                                                        properties:
+                                                            name:
+                                                                description: Name is a human-readable identifier for the rule.
+                                                                type: string
+                                                            rule:
+                                                                description: |-
+                                                                    Rule is the CEL (Common Expression Language) expression to evaluate.
+                                                                    It must return a bool
+                                                                type: string
+                                                        required:
+                                                            - name
+                                                            - rule
+                                                        type: object
+                                                    type: array
                                                 featureID:
                                                     description: |-
                                                         FeatureID is an indentifier of the feature (Helm/Kustomize/Resources)
@@ -7926,7 +8030,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.18.0
+        controller-gen.kubebuilder.io/version: v0.19.0
     name: eventtriggers.lib.projectsveltos.io
 spec:
     group: lib.projectsveltos.io
@@ -7999,6 +8103,7 @@ spec:
                                                 - .Cluster.metadata.namespace: namespace of the managed cluster
                                                 - .Cluster.metadata.name: name of the managed cluster
                                                 - .Cluster.kind: kind of the managed cluster object
+                                                - event data
                                             minLength: 1
                                             type: string
                                         namespace:
@@ -8035,6 +8140,7 @@ spec:
                                     In any managed cluster that matches this ClusterProfile, the add-ons and applications
                                     defined in this instance will not be deployed until all add-ons and applications in the
                                     ClusterProfiles listed as dependencies are deployed.
+                                    This field will be directly transferred to the ClusterProfile Spec
                                 items:
                                     type: string
                                 type: array
@@ -8313,6 +8419,9 @@ spec:
                                                         type: string
                                                     description: Labels that would be added to release metadata.
                                                     type: object
+                                                passCredentialsAll:
+                                                    description: PassCredentialsAll is the flag to pass credentials to all domains
+                                                    type: boolean
                                                 skipCRDs:
                                                     default: false
                                                     description: |-
@@ -8590,6 +8699,14 @@ spec:
                                     generated in response to events.
                                 items:
                                     properties:
+                                        components:
+                                            description: |-
+                                                Components is a list of paths to Kustomize components. These paths are relative to the
+                                                Path field and are included in the Kustomize build to provide reusable configuration logic.
+                                                The paths can be static or leverage Go templates for dynamic customization.
+                                            items:
+                                                type: string
+                                            type: array
                                         deploymentType:
                                             default: Remote
                                             description: |-
@@ -8880,6 +8997,15 @@ spec:
                                     type: object
                                 type: array
                                 x-kubernetes-list-type: atomic
+                            profileNameFormat:
+                                description: |-
+                                    InstantiatedProfileNameFormat defines a template used to generate the name
+                                    of the ClusterProfile created in the management cluster. The template can reference:
+                                    - .Cluster.metadata.namespace: namespace of the managed cluster
+                                    - .Cluster.metadata.name: name of the managed cluster
+                                    - .Cluster.kind: kind of the managed cluster object
+                                    - event data
+                                type: string
                             reloader:
                                 default: false
                                 description: |-
@@ -8914,6 +9040,7 @@ spec:
                                                 - .Cluster.metadata.namespace: namespace of the managed cluster
                                                 - .Cluster.metadata.name: name of the managed cluster
                                                 - .Cluster.kind: kind of the managed cluster object
+                                                - event data
                                             minLength: 1
                                             type: string
                                         namespace:
@@ -9024,7 +9151,6 @@ spec:
                                     Those resources' values will be used to instantiate templates contained in referenced
                                     PolicyRefs and Helm charts
                                     This field will be directly transferred to the ClusterProfile Spec
-                                    generated in response to events.
                                 items:
                                     properties:
                                         identifier:
@@ -9118,6 +9244,31 @@ spec:
                                     generated in response to events.
                                 items:
                                     properties:
+                                        evaluateCEL:
+                                            description: |-
+                                                EvaluateCEL contains a list of named CEL (Common Expression Language) rules.
+                                                Each rule will be evaluated in order against each object selected based on
+                                                the criteria defined above. Each rule's expression must return a boolean value
+                                                indicating whether the object is a match.
+
+                                                Evaluation stops at the first rule that returns true; subsequent
+                                                rules will not be evaluated.
+                                            items:
+                                                description: CELRule defines a named CEL rule used in EvaluateCEL.
+                                                properties:
+                                                    name:
+                                                        description: Name is a human-readable identifier for the rule.
+                                                        type: string
+                                                    rule:
+                                                        description: |-
+                                                            Rule is the CEL (Common Expression Language) expression to evaluate.
+                                                            It must return a bool
+                                                        type: string
+                                                required:
+                                                    - name
+                                                    - rule
+                                                type: object
+                                            type: array
                                         featureID:
                                             description: |-
                                                 FeatureID is an indentifier of the feature (Helm/Kustomize/Resources)
@@ -9375,7 +9526,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.18.0
+        controller-gen.kubebuilder.io/version: v0.19.0
     name: profiles.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -9518,10 +9669,11 @@ spec:
                                 type: boolean
                             dependsOn:
                                 description: |-
-                                    DependsOn specifies a list of other ClusterProfiles that this instance depends on.
-                                    In any managed cluster that matches this ClusterProfile, the add-ons and applications
-                                    defined in this instance will not be deployed until all add-ons and applications in the
-                                    ClusterProfiles listed as dependencies are deployed.
+                                    DependsOn specifies a list of other profiles that this instance depends on.
+                                    A ClusterProfile can only depend on other ClusterProfiles, and a Profile can
+                                    only depend on other Profiles.
+                                    The add-ons and applications defined in this instance will not be deployed
+                                    until all add-ons and applications in the profiles listed as dependencies are deployed.
                                 items:
                                     type: string
                                 type: array
@@ -9687,6 +9839,9 @@ spec:
                                                         type: string
                                                     description: Labels that would be added to release metadata.
                                                     type: object
+                                                passCredentialsAll:
+                                                    description: PassCredentialsAll is the flag to pass credentials to all domains
+                                                    type: boolean
                                                 skipCRDs:
                                                     default: false
                                                     description: |-
@@ -9963,6 +10118,14 @@ spec:
                                     be run on those paths and the outcome will be deployed.
                                 items:
                                     properties:
+                                        components:
+                                            description: |-
+                                                Components is a list of paths to Kustomize components. These paths are relative to the
+                                                Path field and are included in the Kustomize build to provide reusable configuration logic.
+                                                The paths can be static or leverage Go templates for dynamic customization.
+                                            items:
+                                                type: string
+                                            type: array
                                         deploymentType:
                                             default: Remote
                                             description: |-
@@ -10393,6 +10556,31 @@ spec:
                                     is healthy
                                 items:
                                     properties:
+                                        evaluateCEL:
+                                            description: |-
+                                                EvaluateCEL contains a list of named CEL (Common Expression Language) rules.
+                                                Each rule will be evaluated in order against each object selected based on
+                                                the criteria defined above. Each rule's expression must return a boolean value
+                                                indicating whether the object is a match.
+
+                                                Evaluation stops at the first rule that returns true; subsequent
+                                                rules will not be evaluated.
+                                            items:
+                                                description: CELRule defines a named CEL rule used in EvaluateCEL.
+                                                properties:
+                                                    name:
+                                                        description: Name is a human-readable identifier for the rule.
+                                                        type: string
+                                                    rule:
+                                                        description: |-
+                                                            Rule is the CEL (Common Expression Language) expression to evaluate.
+                                                            It must return a bool
+                                                        type: string
+                                                required:
+                                                    - name
+                                                    - rule
+                                                type: object
+                                            type: array
                                         featureID:
                                             description: |-
                                                 FeatureID is an indentifier of the feature (Helm/Kustomize/Resources)

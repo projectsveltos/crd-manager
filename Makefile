@@ -21,7 +21,7 @@ ARCH ?= amd64
 OS ?= $(shell uname -s | tr A-Z a-z)
 K8S_LATEST_VER ?= $(shell curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 export CONTROLLER_IMG ?= $(REGISTRY)/$(IMAGE_NAME)
-TAG ?= main
+TAG ?= v1.1.1
 
 .PHONY: all
 all: build
@@ -191,9 +191,10 @@ deploy-projectsveltos: # Install projectsveltos crd-manager
 
 sveltos-crds:
 	@echo "Downloading sveltos crds"
-	curl -L https://raw.githubusercontent.com/projectsveltos/sveltos/${TAG}/manifest/crds/sveltos_crds.yaml -o ./pkg/crds/crds.yaml
+	curl -L https://raw.githubusercontent.com/projectsveltos/sveltos/main/manifest/crds/sveltos_crds.yaml -o ./pkg/crds/crds.yaml
 	sed -i '' -e 's/`ExtraAnnotations`/ExtraAnnotations/g' ./pkg/crds/crds.yaml
 	sed -i '' -e 's/`ExtraLabels`/ExtraLabels/g' ./pkg/crds/crds.yaml
+	sed -i '' -e 's/`Path`/Path/g' ./pkg/crds/crds.yaml
 	sed -i '' -e 's/`true`/true/g' ./pkg/crds/crds.yaml
 	sed -i '' -e 's/`.Cluster.metadata.namespace`/.Cluster.metadata.namespace/g' ./pkg/crds/crds.yaml
 	sed -i '' -e 's/`.Cluster.metadata.name`/.Cluster.metadata.name/g' ./pkg/crds/crds.yaml
