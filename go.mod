@@ -1,13 +1,13 @@
 module github.com/projectsveltos/crd-manager
 
-go 1.25.2
+go 1.25.3
 
 require (
 	github.com/TwiN/go-color v1.4.1
 	github.com/go-logr/logr v1.4.3
-	github.com/onsi/ginkgo/v2 v2.26.0
+	github.com/onsi/ginkgo/v2 v2.27.2
 	github.com/onsi/gomega v1.38.2
-	github.com/projectsveltos/libsveltos v1.2.0
+	github.com/projectsveltos/libsveltos v1.2.1
 	github.com/spf13/pflag v1.0.10
 	k8s.io/apiextensions-apiserver v0.34.1
 	k8s.io/apimachinery v0.34.1
@@ -58,7 +58,6 @@ require (
 	github.com/xlab/treeprint v1.2.0 // indirect
 	go.opentelemetry.io/otel v1.35.0 // indirect
 	go.opentelemetry.io/otel/trace v1.35.0 // indirect
-	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/mod v0.28.0 // indirect
