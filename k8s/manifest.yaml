@@ -57,7 +57,7 @@ spec:
     spec:
       containers:
       - name: crd-manager
-        image: docker.io/projectsveltos/crd-manager:v1.3.0
+        image: docker.io/projectsveltos/crd-manager:main
         imagePullPolicy: IfNotPresent
         resources:
           requests:
