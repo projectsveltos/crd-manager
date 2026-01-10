@@ -20,7 +20,7 @@ var crdsYAML = []byte(`apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: accessrequests.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -158,7 +158,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: classifierreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -244,7 +244,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: classifiers.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -560,6 +560,7 @@ spec:
                       - Provisioning
                       - Provisioned
                       - Failed
+                      - FailedNonRetriable
                       - Removing
                       - Removed
                       type: string
@@ -660,7 +661,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: clusterhealthchecks.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -954,6 +955,7 @@ spec:
                           - Provisioning
                           - Provisioned
                           - Failed
+                          - FailedNonRetriable
                           - Removing
                           - Removed
                           type: string
@@ -1097,7 +1099,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: clustersets.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -1343,7 +1345,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: configurationbundles.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -1480,7 +1482,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: configurationgroups.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -1969,7 +1971,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: debuggingconfigurations.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2055,7 +2057,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: eventreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2199,7 +2201,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: eventsources.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2443,7 +2445,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: healthcheckreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2595,7 +2597,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: healthchecks.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2802,7 +2804,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: reloaderreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2911,7 +2913,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: reloaders.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2986,7 +2988,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: resourcesummaries.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3399,7 +3401,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: rolerequests.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3602,6 +3604,7 @@ spec:
                       - Provisioning
                       - Provisioned
                       - Failed
+                      - FailedNonRetriable
                       - Removing
                       - Removed
                       type: string
@@ -3674,7 +3677,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: sets.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3920,7 +3923,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: sveltosclusters.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -4467,7 +4470,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: sveltoslicenses.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -4549,7 +4552,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.19.0
+    controller-gen.kubebuilder.io/version: v0.20.0
   name: techsupports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -5204,7 +5207,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.19.0
+        controller-gen.kubebuilder.io/version: v0.20.0
     name: clusterconfigurations.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -5479,7 +5482,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.19.0
+        controller-gen.kubebuilder.io/version: v0.20.0
     name: clusterprofiles.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -6844,7 +6847,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.19.0
+        controller-gen.kubebuilder.io/version: v0.20.0
     name: clusterpromotions.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -8289,7 +8292,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.19.0
+        controller-gen.kubebuilder.io/version: v0.20.0
     name: clusterreports.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -8583,7 +8586,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.19.0
+        controller-gen.kubebuilder.io/version: v0.20.0
     name: clustersummaries.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -9848,6 +9851,7 @@ spec:
                                                 DeployedGroupVersionKind contains all GroupVersionKinds deployed in either
                                                 the workload cluster or the management cluster because of this feature.
                                                 Each element has format kind.version.group
+
                                                 Deprecated: Replaced by FeatureDeploymentInfo field instead
                                             items:
                                                 type: string
@@ -9958,7 +9962,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.19.0
+        controller-gen.kubebuilder.io/version: v0.20.0
     name: eventtriggers.lib.projectsveltos.io
 spec:
     group: lib.projectsveltos.io
@@ -11377,6 +11381,7 @@ spec:
                                                 - Provisioning
                                                 - Provisioned
                                                 - Failed
+                                                - FailedNonRetriable
                                                 - Removing
                                                 - Removed
                                             type: string
@@ -11492,7 +11497,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.19.0
+        controller-gen.kubebuilder.io/version: v0.20.0
     name: profiles.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
