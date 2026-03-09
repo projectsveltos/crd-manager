@@ -20,7 +20,7 @@ var crdsYAML = []byte(`apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: accessrequests.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -158,7 +158,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: classifierreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -244,7 +244,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: classifiers.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -661,7 +661,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: clusterhealthchecks.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -1099,7 +1099,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: clustersets.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -1345,7 +1345,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: configurationbundles.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -1482,7 +1482,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: configurationgroups.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2183,7 +2183,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: debuggingconfigurations.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2269,7 +2269,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: eventreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2413,7 +2413,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: eventsources.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2657,7 +2657,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: healthcheckreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2809,7 +2809,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: healthchecks.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3024,7 +3024,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: reloaderreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3133,7 +3133,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: reloaders.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3208,7 +3208,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: resourcesummaries.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3621,7 +3621,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: rolerequests.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3897,7 +3897,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: sets.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -4143,7 +4143,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: sveltosclusters.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -4690,7 +4690,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: sveltoslicenses.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -4772,7 +4772,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.20.0
+    controller-gen.kubebuilder.io/version: v0.20.1
   name: techsupports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -5427,7 +5427,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.20.0
+        controller-gen.kubebuilder.io/version: v0.20.1
     name: clusterconfigurations.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -5702,7 +5702,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.20.0
+        controller-gen.kubebuilder.io/version: v0.20.1
     name: clusterprofiles.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -7133,6 +7133,72 @@ spec:
                                     must be deployed, based on the combined configuration of its dependencies.
                                 format: byte
                                 type: string
+                            failedClusters:
+                                description: |-
+                                    FailedClusters contains information about clusters for which
+                                    a ClusterSummary could not be created or updated.
+                                items:
+                                    description: |-
+                                        FailedCluster describes an error encountered while trying to
+                                        manage resources for a specific matching cluster.
+                                    properties:
+                                        clusterRef:
+                                            description: ClusterRef is a reference to the cluster where the failure occurred.
+                                            properties:
+                                                apiVersion:
+                                                    description: API version of the referent.
+                                                    type: string
+                                                fieldPath:
+                                                    description: |-
+                                                        If referring to a piece of an object instead of an entire object, this string
+                                                        should contain a valid JSON/Go field access statement, such as desiredState.manifest.containers[2].
+                                                        For example, if the object reference is to a container within a pod, this would take on a value like:
+                                                        "spec.containers{name}" (where "name" refers to the name of the container that triggered
+                                                        the event) or if no container name is specified "spec.containers[2]" (container with
+                                                        index 2 in this pod). This syntax is chosen only to have some well-defined way of
+                                                        referencing a part of an object.
+                                                    type: string
+                                                kind:
+                                                    description: |-
+                                                        Kind of the referent.
+                                                        More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+                                                    type: string
+                                                name:
+                                                    description: |-
+                                                        Name of the referent.
+                                                        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                                    type: string
+                                                namespace:
+                                                    description: |-
+                                                        Namespace of the referent.
+                                                        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+                                                    type: string
+                                                resourceVersion:
+                                                    description: |-
+                                                        Specific resourceVersion to which this reference is made, if any.
+                                                        More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency
+                                                    type: string
+                                                uid:
+                                                    description: |-
+                                                        UID of the referent.
+                                                        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids
+                                                    type: string
+                                            type: object
+                                            x-kubernetes-map-type: atomic
+                                        failureMessage:
+                                            description: |-
+                                                FailureMessage is a human-readable explanation of why the
+                                                ClusterSummary creation/update failed.
+                                            type: string
+                                        lastFailureTime:
+                                            description: LastFailureTime is the time the error occurred.
+                                            format: date-time
+                                            type: string
+                                    required:
+                                        - clusterRef
+                                        - failureMessage
+                                    type: object
+                                type: array
                             matchingClusters:
                                 description: |-
                                     MatchingClusterRefs reference all the clusters currently matching
@@ -7324,7 +7390,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.20.0
+        controller-gen.kubebuilder.io/version: v0.20.1
     name: clusterpromotions.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -9026,7 +9092,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.20.0
+        controller-gen.kubebuilder.io/version: v0.20.1
     name: clusterreports.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -9320,7 +9386,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.20.0
+        controller-gen.kubebuilder.io/version: v0.20.1
     name: clustersummaries.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -10953,7 +11019,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.20.0
+        controller-gen.kubebuilder.io/version: v0.20.1
     name: eventtriggers.lib.projectsveltos.io
 spec:
     group: lib.projectsveltos.io
@@ -12745,7 +12811,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.20.0
+        controller-gen.kubebuilder.io/version: v0.20.1
     name: profiles.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -14176,6 +14242,72 @@ spec:
                                     must be deployed, based on the combined configuration of its dependencies.
                                 format: byte
                                 type: string
+                            failedClusters:
+                                description: |-
+                                    FailedClusters contains information about clusters for which
+                                    a ClusterSummary could not be created or updated.
+                                items:
+                                    description: |-
+                                        FailedCluster describes an error encountered while trying to
+                                        manage resources for a specific matching cluster.
+                                    properties:
+                                        clusterRef:
+                                            description: ClusterRef is a reference to the cluster where the failure occurred.
+                                            properties:
+                                                apiVersion:
+                                                    description: API version of the referent.
+                                                    type: string
+                                                fieldPath:
+                                                    description: |-
+                                                        If referring to a piece of an object instead of an entire object, this string
+                                                        should contain a valid JSON/Go field access statement, such as desiredState.manifest.containers[2].
+                                                        For example, if the object reference is to a container within a pod, this would take on a value like:
+                                                        "spec.containers{name}" (where "name" refers to the name of the container that triggered
+                                                        the event) or if no container name is specified "spec.containers[2]" (container with
+                                                        index 2 in this pod). This syntax is chosen only to have some well-defined way of
+                                                        referencing a part of an object.
+                                                    type: string
+                                                kind:
+                                                    description: |-
+                                                        Kind of the referent.
+                                                        More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+                                                    type: string
+                                                name:
+                                                    description: |-
+                                                        Name of the referent.
+                                                        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                                    type: string
+                                                namespace:
+                                                    description: |-
+                                                        Namespace of the referent.
+                                                        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+                                                    type: string
+                                                resourceVersion:
+                                                    description: |-
+                                                        Specific resourceVersion to which this reference is made, if any.
+                                                        More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency
+                                                    type: string
+                                                uid:
+                                                    description: |-
+                                                        UID of the referent.
+                                                        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids
+                                                    type: string
+                                            type: object
+                                            x-kubernetes-map-type: atomic
+                                        failureMessage:
+                                            description: |-
+                                                FailureMessage is a human-readable explanation of why the
+                                                ClusterSummary creation/update failed.
+                                            type: string
+                                        lastFailureTime:
+                                            description: LastFailureTime is the time the error occurred.
+                                            format: date-time
+                                            type: string
+                                    required:
+                                        - clusterRef
+                                        - failureMessage
+                                    type: object
+                                type: array
                             matchingClusters:
                                 description: |-
                                     MatchingClusterRefs reference all the clusters currently matching
