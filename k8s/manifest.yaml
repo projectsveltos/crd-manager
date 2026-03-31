@@ -55,9 +55,11 @@ spec:
   ttlSecondsAfterFinished: 240
   template:
     spec:
+      securityContext:
+        runAsNonRoot: true
       containers:
       - name: crd-manager
-        image: docker.io/projectsveltos/crd-manager:v1.6.0
+        image: docker.io/projectsveltos/crd-manager:v1.7.0
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -67,6 +69,7 @@ spec:
           capabilities:
             drop:
             - ALL
+          readOnlyRootFilesystem: true
       serviceAccountName: crd-manager
       restartPolicy: OnFailure
   backoffLimit: 4
