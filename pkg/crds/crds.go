@@ -1458,6 +1458,16 @@ spec:
                   type: string
                 type: array
                 x-kubernetes-list-type: atomic
+              skipNamespaceCreation:
+                default: false
+                description: |-
+                  SkipNamespaceCreation indicates whether Sveltos should skip creating the namespace
+                  for namespaced resources defined in this PolicyRef.
+                  This field is ignored for cluster-scoped resources.
+                  By default, Sveltos attempts to get or create the target namespace if it does not exist.
+                  Setting this to true avoids those calls, which is necessary when Sveltos lacks
+                  permissions to manage namespaces at the cluster level.
+                type: boolean
               timeout:
                 description: time to wait for Kubernetes operation (like Jobs for
                   hooks)
@@ -4593,6 +4603,14 @@ spec:
                 description: TokenRequestRenewalOption contains options describing
                   how to renew TokenRequest
                 properties:
+                  kubeconfigKeyName:
+                    description: |-
+                      KubeconfigKeyName is the name of the key in the Secret where the renewed
+                      kubeconfig will be stored.
+                      If nil, Sveltos defaults to "re-kubeconfig" and updates SveltosCluster.Spec.KubeconfigKeyName.
+                      If set, Sveltos writes to this key. To prevent GitOps drift, set this to the
+                      same value as SveltosCluster.Spec.KubeconfigKeyName.
+                    type: string
                   renewTokenRequestInterval:
                     description: RenewTokenRequestInterval is the interval at which
                       to renew the TokenRequest
@@ -6024,6 +6042,16 @@ spec:
                                                 passCredentialsAll:
                                                     description: PassCredentialsAll is the flag to pass credentials to all domains
                                                     type: boolean
+                                                runTests:
+                                                    default: false
+                                                    description: |-
+                                                        RunTests if set to true, Sveltos will run helm test after each successful install or upgrade
+                                                        operation. The tests are the test hooks defined in the chart (annotated with
+                                                        "helm.sh/hook: test"). If any test fails the deployment is considered failed and the
+                                                        error is surfaced in the ClusterSummary status, providing operational gating.
+                                                        Has no effect in DryRun mode.
+                                                        Default to false
+                                                    type: boolean
                                                 skipCRDs:
                                                     default: false
                                                     description: |-
@@ -6369,6 +6397,16 @@ spec:
                                                 When expressed as templates, the values are filled in using information from
                                                 resources within the management cluster before deployment (Cluster)
                                             type: string
+                                        skipNamespaceCreation:
+                                            default: false
+                                            description: |-
+                                                SkipNamespaceCreation indicates whether Sveltos should skip creating the namespace
+                                                for namespaced resources defined in this KustomizationRef.
+                                                This field is ignored for cluster-scoped resources.
+                                                By default, Sveltos attempts to get or create the target namespace if it does not exist.
+                                                Setting this to true avoids those calls, which is necessary when Sveltos lacks
+                                                permissions to manage namespaces at the cluster level.
+                                            type: boolean
                                         targetNamespace:
                                             description: |-
                                                 TargetNamespace sets or overrides the namespace in the
@@ -6652,6 +6690,16 @@ spec:
                                                 Defaults to 'None', which translates to the root path of the SourceRef.
                                                 Used only for GitRepository;OCIRepository;Bucket
                                             type: string
+                                        skipNamespaceCreation:
+                                            default: false
+                                            description: |-
+                                                SkipNamespaceCreation indicates whether Sveltos should skip creating the namespace
+                                                for namespaced resources defined in this PolicyRef.
+                                                This field is ignored for cluster-scoped resources.
+                                                By default, Sveltos attempts to get or create the target namespace if it does not exist.
+                                                Setting this to true avoids those calls, which is necessary when Sveltos lacks
+                                                permissions to manage namespaces at the cluster level.
+                                            type: boolean
                                         tier:
                                             default: 100
                                             description: |-
@@ -7617,6 +7665,16 @@ spec:
                                                         passCredentialsAll:
                                                             description: PassCredentialsAll is the flag to pass credentials to all domains
                                                             type: boolean
+                                                        runTests:
+                                                            default: false
+                                                            description: |-
+                                                                RunTests if set to true, Sveltos will run helm test after each successful install or upgrade
+                                                                operation. The tests are the test hooks defined in the chart (annotated with
+                                                                "helm.sh/hook: test"). If any test fails the deployment is considered failed and the
+                                                                error is surfaced in the ClusterSummary status, providing operational gating.
+                                                                Has no effect in DryRun mode.
+                                                                Default to false
+                                                            type: boolean
                                                         skipCRDs:
                                                             default: false
                                                             description: |-
@@ -7962,6 +8020,16 @@ spec:
                                                         When expressed as templates, the values are filled in using information from
                                                         resources within the management cluster before deployment (Cluster)
                                                     type: string
+                                                skipNamespaceCreation:
+                                                    default: false
+                                                    description: |-
+                                                        SkipNamespaceCreation indicates whether Sveltos should skip creating the namespace
+                                                        for namespaced resources defined in this KustomizationRef.
+                                                        This field is ignored for cluster-scoped resources.
+                                                        By default, Sveltos attempts to get or create the target namespace if it does not exist.
+                                                        Setting this to true avoids those calls, which is necessary when Sveltos lacks
+                                                        permissions to manage namespaces at the cluster level.
+                                                    type: boolean
                                                 targetNamespace:
                                                     description: |-
                                                         TargetNamespace sets or overrides the namespace in the
@@ -8245,6 +8313,16 @@ spec:
                                                         Defaults to 'None', which translates to the root path of the SourceRef.
                                                         Used only for GitRepository;OCIRepository;Bucket
                                                     type: string
+                                                skipNamespaceCreation:
+                                                    default: false
+                                                    description: |-
+                                                        SkipNamespaceCreation indicates whether Sveltos should skip creating the namespace
+                                                        for namespaced resources defined in this PolicyRef.
+                                                        This field is ignored for cluster-scoped resources.
+                                                        By default, Sveltos attempts to get or create the target namespace if it does not exist.
+                                                        Setting this to true avoids those calls, which is necessary when Sveltos lacks
+                                                        permissions to manage namespaces at the cluster level.
+                                                    type: boolean
                                                 tier:
                                                     default: 100
                                                     description: |-
@@ -8938,6 +9016,16 @@ spec:
                                                                             Defaults to 'None', which translates to the root path of the SourceRef.
                                                                             Used only for GitRepository;OCIRepository;Bucket
                                                                         type: string
+                                                                    skipNamespaceCreation:
+                                                                        default: false
+                                                                        description: |-
+                                                                            SkipNamespaceCreation indicates whether Sveltos should skip creating the namespace
+                                                                            for namespaced resources defined in this PolicyRef.
+                                                                            This field is ignored for cluster-scoped resources.
+                                                                            By default, Sveltos attempts to get or create the target namespace if it does not exist.
+                                                                            Setting this to true avoids those calls, which is necessary when Sveltos lacks
+                                                                            permissions to manage namespaces at the cluster level.
+                                                                        type: boolean
                                                                     tier:
                                                                         default: 100
                                                                         description: |-
@@ -9161,6 +9249,16 @@ spec:
                                                                             Defaults to 'None', which translates to the root path of the SourceRef.
                                                                             Used only for GitRepository;OCIRepository;Bucket
                                                                         type: string
+                                                                    skipNamespaceCreation:
+                                                                        default: false
+                                                                        description: |-
+                                                                            SkipNamespaceCreation indicates whether Sveltos should skip creating the namespace
+                                                                            for namespaced resources defined in this PolicyRef.
+                                                                            This field is ignored for cluster-scoped resources.
+                                                                            By default, Sveltos attempts to get or create the target namespace if it does not exist.
+                                                                            Setting this to true avoids those calls, which is necessary when Sveltos lacks
+                                                                            permissions to manage namespaces at the cluster level.
+                                                                        type: boolean
                                                                     tier:
                                                                         default: 100
                                                                         description: |-
@@ -9928,6 +10026,16 @@ spec:
                                                         passCredentialsAll:
                                                             description: PassCredentialsAll is the flag to pass credentials to all domains
                                                             type: boolean
+                                                        runTests:
+                                                            default: false
+                                                            description: |-
+                                                                RunTests if set to true, Sveltos will run helm test after each successful install or upgrade
+                                                                operation. The tests are the test hooks defined in the chart (annotated with
+                                                                "helm.sh/hook: test"). If any test fails the deployment is considered failed and the
+                                                                error is surfaced in the ClusterSummary status, providing operational gating.
+                                                                Has no effect in DryRun mode.
+                                                                Default to false
+                                                            type: boolean
                                                         skipCRDs:
                                                             default: false
                                                             description: |-
@@ -10273,6 +10381,16 @@ spec:
                                                         When expressed as templates, the values are filled in using information from
                                                         resources within the management cluster before deployment (Cluster)
                                                     type: string
+                                                skipNamespaceCreation:
+                                                    default: false
+                                                    description: |-
+                                                        SkipNamespaceCreation indicates whether Sveltos should skip creating the namespace
+                                                        for namespaced resources defined in this KustomizationRef.
+                                                        This field is ignored for cluster-scoped resources.
+                                                        By default, Sveltos attempts to get or create the target namespace if it does not exist.
+                                                        Setting this to true avoids those calls, which is necessary when Sveltos lacks
+                                                        permissions to manage namespaces at the cluster level.
+                                                    type: boolean
                                                 targetNamespace:
                                                     description: |-
                                                         TargetNamespace sets or overrides the namespace in the
@@ -10556,6 +10674,16 @@ spec:
                                                         Defaults to 'None', which translates to the root path of the SourceRef.
                                                         Used only for GitRepository;OCIRepository;Bucket
                                                     type: string
+                                                skipNamespaceCreation:
+                                                    default: false
+                                                    description: |-
+                                                        SkipNamespaceCreation indicates whether Sveltos should skip creating the namespace
+                                                        for namespaced resources defined in this PolicyRef.
+                                                        This field is ignored for cluster-scoped resources.
+                                                        By default, Sveltos attempts to get or create the target namespace if it does not exist.
+                                                        Setting this to true avoids those calls, which is necessary when Sveltos lacks
+                                                        permissions to manage namespaces at the cluster level.
+                                                    type: boolean
                                                 tier:
                                                     default: 100
                                                     description: |-
@@ -11157,6 +11285,10 @@ spec:
                                         failureMessage:
                                             description: FailureMessage provides the specific error from the Helm engine for this release
                                             type: string
+                                        patchesHash:
+                                            description: PatchesHash represents of a unique value for the patches section
+                                            format: byte
+                                            type: string
                                         releaseName:
                                             description: ReleaseName is the chart release
                                             minLength: 1
@@ -11609,6 +11741,16 @@ spec:
                                                 passCredentialsAll:
                                                     description: PassCredentialsAll is the flag to pass credentials to all domains
                                                     type: boolean
+                                                runTests:
+                                                    default: false
+                                                    description: |-
+                                                        RunTests if set to true, Sveltos will run helm test after each successful install or upgrade
+                                                        operation. The tests are the test hooks defined in the chart (annotated with
+                                                        "helm.sh/hook: test"). If any test fails the deployment is considered failed and the
+                                                        error is surfaced in the ClusterSummary status, providing operational gating.
+                                                        Has no effect in DryRun mode.
+                                                        Default to false
+                                                    type: boolean
                                                 skipCRDs:
                                                     default: false
                                                     description: |-
@@ -11955,6 +12097,16 @@ spec:
                                                 When expressed as templates, the values are filled in using information from
                                                 resources within the management cluster before deployment (Cluster)
                                             type: string
+                                        skipNamespaceCreation:
+                                            default: false
+                                            description: |-
+                                                SkipNamespaceCreation indicates whether Sveltos should skip creating the namespace
+                                                for namespaced resources defined in this KustomizationRef.
+                                                This field is ignored for cluster-scoped resources.
+                                                By default, Sveltos attempts to get or create the target namespace if it does not exist.
+                                                Setting this to true avoids those calls, which is necessary when Sveltos lacks
+                                                permissions to manage namespaces at the cluster level.
+                                            type: boolean
                                         targetNamespace:
                                             description: |-
                                                 TargetNamespace sets or overrides the namespace in the
@@ -12244,6 +12396,16 @@ spec:
                                                 Defaults to 'None', which translates to the root path of the SourceRef.
                                                 Used only for GitRepository;OCIRepository;Bucket
                                             type: string
+                                        skipNamespaceCreation:
+                                            default: false
+                                            description: |-
+                                                SkipNamespaceCreation indicates whether Sveltos should skip creating the namespace
+                                                for namespaced resources defined in this PolicyRef.
+                                                This field is ignored for cluster-scoped resources.
+                                                By default, Sveltos attempts to get or create the target namespace if it does not exist.
+                                                Setting this to true avoids those calls, which is necessary when Sveltos lacks
+                                                permissions to manage namespaces at the cluster level.
+                                            type: boolean
                                         tier:
                                             default: 100
                                             description: |-
@@ -13328,6 +13490,16 @@ spec:
                                                 passCredentialsAll:
                                                     description: PassCredentialsAll is the flag to pass credentials to all domains
                                                     type: boolean
+                                                runTests:
+                                                    default: false
+                                                    description: |-
+                                                        RunTests if set to true, Sveltos will run helm test after each successful install or upgrade
+                                                        operation. The tests are the test hooks defined in the chart (annotated with
+                                                        "helm.sh/hook: test"). If any test fails the deployment is considered failed and the
+                                                        error is surfaced in the ClusterSummary status, providing operational gating.
+                                                        Has no effect in DryRun mode.
+                                                        Default to false
+                                                    type: boolean
                                                 skipCRDs:
                                                     default: false
                                                     description: |-
@@ -13673,6 +13845,16 @@ spec:
                                                 When expressed as templates, the values are filled in using information from
                                                 resources within the management cluster before deployment (Cluster)
                                             type: string
+                                        skipNamespaceCreation:
+                                            default: false
+                                            description: |-
+                                                SkipNamespaceCreation indicates whether Sveltos should skip creating the namespace
+                                                for namespaced resources defined in this KustomizationRef.
+                                                This field is ignored for cluster-scoped resources.
+                                                By default, Sveltos attempts to get or create the target namespace if it does not exist.
+                                                Setting this to true avoids those calls, which is necessary when Sveltos lacks
+                                                permissions to manage namespaces at the cluster level.
+                                            type: boolean
                                         targetNamespace:
                                             description: |-
                                                 TargetNamespace sets or overrides the namespace in the
@@ -13956,6 +14138,16 @@ spec:
                                                 Defaults to 'None', which translates to the root path of the SourceRef.
                                                 Used only for GitRepository;OCIRepository;Bucket
                                             type: string
+                                        skipNamespaceCreation:
+                                            default: false
+                                            description: |-
+                                                SkipNamespaceCreation indicates whether Sveltos should skip creating the namespace
+                                                for namespaced resources defined in this PolicyRef.
+                                                This field is ignored for cluster-scoped resources.
+                                                By default, Sveltos attempts to get or create the target namespace if it does not exist.
+                                                Setting this to true avoids those calls, which is necessary when Sveltos lacks
+                                                permissions to manage namespaces at the cluster level.
+                                            type: boolean
                                         tier:
                                             default: 100
                                             description: |-

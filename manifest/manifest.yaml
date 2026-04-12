@@ -59,7 +59,7 @@ spec:
         runAsNonRoot: true
       containers:
       - name: crd-manager
-        image: docker.io/projectsveltos/crd-manager:v1.7.0
+        image: docker.io/projectsveltos/crd-manager:v1.8.0
         imagePullPolicy: IfNotPresent
         resources:
           requests:
