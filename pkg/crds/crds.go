@@ -1706,9 +1706,10 @@ spec:
                 type: integer
               postDeleteChecks:
                 description: |-
-                  PostDeleteChecks is a slice of Lua functions to run against
-                  the managed cluster *after* Sveltos has deleted all resources.
+                  PostDeleteChecks is a slice of checks to run against the managed cluster
+                  *after* Sveltos has deleted all resources.
                   This ensures that the environment has reached the desired clean state.
+                  Each check can select resources and validate them using Lua scripts or CEL expressions.
                 items:
                   properties:
                     evaluateCEL:
@@ -1812,9 +1813,117 @@ spec:
                 x-kubernetes-list-type: atomic
               preDeleteChecks:
                 description: |-
-                  PreDeleteChecks is a slice of Lua functions to run against
-                  the managed cluster *before* Sveltos starts deleting resources.
+                  PreDeleteChecks is a slice of checks to run against the managed cluster
+                  *before* Sveltos starts deleting resources.
                   If any of these fail, the deletion process is halted.
+                  Each check can select resources and validate them using Lua scripts or CEL expressions.
+                items:
+                  properties:
+                    evaluateCEL:
+                      description: |-
+                        EvaluateCEL contains a list of named CEL (Common Expression Language) rules.
+                        Each rule will be evaluated in order against each object selected based on
+                        the criteria defined above. Each rule's expression must return a boolean value
+                        indicating whether the object is a match.
+
+                        Evaluation stops at the first rule that returns true; subsequent
+                        rules will not be evaluated.
+                      items:
+                        description: CELRule defines a named CEL rule used in EvaluateCEL.
+                        properties:
+                          name:
+                            description: Name is a human-readable identifier for the
+                              rule.
+                            type: string
+                          rule:
+                            description: |-
+                              Rule is the CEL (Common Expression Language) expression to evaluate.
+                              It must return a bool
+                            type: string
+                        required:
+                        - name
+                        - rule
+                        type: object
+                      type: array
+                    featureID:
+                      description: |-
+                        FeatureID is an indentifier of the feature (Helm/Kustomize/Resources)
+                        This field indicates when to run this check.
+                        For instance:
+                        - if set to Helm this check will be run after all helm
+                        charts specified in the ClusterProfile are deployed.
+                        - if set to Resources this check will be run after the content
+                        of all the ConfigMaps/Secrets referenced by ClusterProfile in the
+                        PolicyRef sections is deployed
+                      enum:
+                      - Resources
+                      - Helm
+                      - Kustomize
+                      type: string
+                    group:
+                      description: Group of the resource to fetch in the managed Cluster.
+                      type: string
+                    kind:
+                      description: Kind of the resource to fetch in the managed Cluster.
+                      minLength: 1
+                      type: string
+                    labelFilters:
+                      description: LabelFilters allows to filter resources based on
+                        current labels.
+                      items:
+                        properties:
+                          key:
+                            description: Key is the label key
+                            type: string
+                          operation:
+                            description: Operation is the comparison operation
+                            enum:
+                            - Equal
+                            - Different
+                            - Has
+                            - DoesNotHave
+                            type: string
+                          value:
+                            description: Value is the label value
+                            type: string
+                        required:
+                        - key
+                        - operation
+                        type: object
+                      type: array
+                    name:
+                      description: Name is the name of this check
+                      type: string
+                    namespace:
+                      description: |-
+                        Namespace of the resource to fetch in the managed Cluster.
+                        Empty for resources scoped at cluster level.
+                      type: string
+                    script:
+                      description: |-
+                        Script is a text containing a lua script.
+                        Must return struct with field "health"
+                        representing whether object is a match (true or false)
+                      type: string
+                    version:
+                      description: Version of the resource to fetch in the managed
+                        Cluster.
+                      type: string
+                  required:
+                  - featureID
+                  - group
+                  - kind
+                  - name
+                  - version
+                  type: object
+                type: array
+                x-kubernetes-list-type: atomic
+              preDeployChecks:
+                description: |-
+                  PreDeployChecks is a slice of checks to run against the managed cluster
+                  *before* Sveltos starts deploying resources.
+                  Each check can use Lua scripts or CEL expressions to validate the cluster state.
+                  If any check fails, the deployment of the associated feature is halted.
                 items:
                   properties:
                     evaluateCEL:
@@ -2032,9 +2141,10 @@ spec:
                 type: string
               validateHealths:
                 description: |-
-                  ValidateHealths is a slice of Lua functions to run against
-                  the managed cluster to validate the state of those add-ons/applications
-                  is healthy
+                  ValidateHealths is a slice of checks to run against the managed cluster
+                  *after* resources are deployed to validate that the state of the
+                  add-ons/applications is healthy.
+                  Each check can select resources and validate them using Lua scripts or CEL expressions.
                 items:
                   properties:
                     evaluateCEL:
@@ -6656,6 +6766,7 @@ spec:
                                                 Kind of the resource. Supported kinds are:
                                                 - ConfigMap/Secret
                                                 - flux GitRepository;OCIRepository;Bucket
+                                                Required when RemoteURL is not set.
                                             enum:
                                                 - GitRepository
                                                 - OCIRepository
@@ -6667,7 +6778,7 @@ spec:
                                             description: |-
                                                 Name of the referenced resource.
                                                 Name can be expressed as a template and instantiate using any cluster field.
-                                            minLength: 1
+                                                Required when RemoteURL is not set.
                                             type: string
                                         namespace:
                                             description: |-
@@ -6676,6 +6787,7 @@ spec:
                                                 be implicit set to cluster's namespace.
                                                 For Profile namespace must be left empty. Profile namespace will be used.
                                                 Namespace can be expressed as a template and instantiate using any cluster field.
+                                                Not used when RemoteURL is set.
                                             type: string
                                         optional:
                                             default: false
@@ -6690,6 +6802,52 @@ spec:
                                                 Defaults to 'None', which translates to the root path of the SourceRef.
                                                 Used only for GitRepository;OCIRepository;Bucket
                                             type: string
+                                        remoteURL:
+                                            description: |-
+                                                RemoteURL configures fetching content from an HTTP/HTTPS endpoint.
+                                                When set, Kind/Name/Namespace must be omitted.
+                                            properties:
+                                                interval:
+                                                    description: |-
+                                                        Interval defines how often Sveltos re-fetches the URL to detect changes.
+                                                        Defaults to 5 minutes.
+                                                    type: string
+                                                secretRef:
+                                                    description: |-
+                                                        SecretRef references a Secret in the management cluster containing optional
+                                                        credentials for fetching the URL. Supported Secret keys:
+                                                          "token"              — Bearer token (Authorization: Bearer <token>)
+                                                          "username"+"password" — HTTP Basic Auth
+                                                          "caFile"             — PEM-encoded CA certificate for TLS verification
+                                                    properties:
+                                                        name:
+                                                            default: ""
+                                                            description: |-
+                                                                Name of the referent.
+                                                                This field is effectively required, but due to backwards compatibility is
+                                                                allowed to be empty. Instances of this type with an empty value here are
+                                                                almost certainly wrong.
+                                                                More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                                            type: string
+                                                    type: object
+                                                    x-kubernetes-map-type: atomic
+                                                template:
+                                                    description: |-
+                                                        Template indicates that the content served at URL is a Go template that
+                                                        must be instantiated using cluster fields and templateResourceRefs values
+                                                        before deployment. Equivalent to the projectsveltos.io/template annotation
+                                                        on a ConfigMap or Secret.
+                                                    type: boolean
+                                                url:
+                                                    description: |-
+                                                        URL is an HTTP/HTTPS endpoint serving raw YAML/JSON/KYAML content.
+                                                        Sveltos fetches the content on every reconciliation and redeploys if the
+                                                        content hash has changed.
+                                                    pattern: ^https?://
+                                                    type: string
+                                            required:
+                                                - url
+                                            type: object
                                         skipNamespaceCreation:
                                             default: false
                                             description: |-
@@ -6713,17 +6871,18 @@ spec:
                                             format: int32
                                             minimum: 1
                                             type: integer
-                                    required:
-                                        - kind
-                                        - name
                                     type: object
+                                    x-kubernetes-validations:
+                                        - message: either remoteURL or kind must be set, but not both
+                                          rule: has(self.remoteURL) != has(self.kind)
                                 type: array
                                 x-kubernetes-list-type: atomic
                             postDeleteChecks:
                                 description: |-
-                                    PostDeleteChecks is a slice of Lua functions to run against
-                                    the managed cluster *after* Sveltos has deleted all resources.
+                                    PostDeleteChecks is a slice of checks to run against the managed cluster
+                                    *after* Sveltos has deleted all resources.
                                     This ensures that the environment has reached the desired clean state.
+                                    Each check can select resources and validate them using Lua scripts or CEL expressions.
                                 items:
                                     properties:
                                         evaluateCEL:
@@ -6824,9 +6983,114 @@ spec:
                                 x-kubernetes-list-type: atomic
                             preDeleteChecks:
                                 description: |-
-                                    PreDeleteChecks is a slice of Lua functions to run against
-                                    the managed cluster *before* Sveltos starts deleting resources.
+                                    PreDeleteChecks is a slice of checks to run against the managed cluster
+                                    *before* Sveltos starts deleting resources.
                                     If any of these fail, the deletion process is halted.
+                                    Each check can select resources and validate them using Lua scripts or CEL expressions.
+                                items:
+                                    properties:
+                                        evaluateCEL:
+                                            description: |-
+                                                EvaluateCEL contains a list of named CEL (Common Expression Language) rules.
+                                                Each rule will be evaluated in order against each object selected based on
+                                                the criteria defined above. Each rule's expression must return a boolean value
+                                                indicating whether the object is a match.
+
+                                                Evaluation stops at the first rule that returns true; subsequent
+                                                rules will not be evaluated.
+                                            items:
+                                                description: CELRule defines a named CEL rule used in EvaluateCEL.
+                                                properties:
+                                                    name:
+                                                        description: Name is a human-readable identifier for the rule.
+                                                        type: string
+                                                    rule:
+                                                        description: |-
+                                                            Rule is the CEL (Common Expression Language) expression to evaluate.
+                                                            It must return a bool
+                                                        type: string
+                                                required:
+                                                    - name
+                                                    - rule
+                                                type: object
+                                            type: array
+                                        featureID:
+                                            description: |-
+                                                FeatureID is an indentifier of the feature (Helm/Kustomize/Resources)
+                                                This field indicates when to run this check.
+                                                For instance:
+                                                - if set to Helm this check will be run after all helm
+                                                charts specified in the ClusterProfile are deployed.
+                                                - if set to Resources this check will be run after the content
+                                                of all the ConfigMaps/Secrets referenced by ClusterProfile in the
+                                                PolicyRef sections is deployed
+                                            enum:
+                                                - Resources
+                                                - Helm
+                                                - Kustomize
+                                            type: string
+                                        group:
+                                            description: Group of the resource to fetch in the managed Cluster.
+                                            type: string
+                                        kind:
+                                            description: Kind of the resource to fetch in the managed Cluster.
+                                            minLength: 1
+                                            type: string
+                                        labelFilters:
+                                            description: LabelFilters allows to filter resources based on current labels.
+                                            items:
+                                                properties:
+                                                    key:
+                                                        description: Key is the label key
+                                                        type: string
+                                                    operation:
+                                                        description: Operation is the comparison operation
+                                                        enum:
+                                                            - Equal
+                                                            - Different
+                                                            - Has
+                                                            - DoesNotHave
+                                                        type: string
+                                                    value:
+                                                        description: Value is the label value
+                                                        type: string
+                                                required:
+                                                    - key
+                                                    - operation
+                                                type: object
+                                            type: array
+                                        name:
+                                            description: Name is the name of this check
+                                            type: string
+                                        namespace:
+                                            description: |-
+                                                Namespace of the resource to fetch in the managed Cluster.
+                                                Empty for resources scoped at cluster level.
+                                            type: string
+                                        script:
+                                            description: |-
+                                                Script is a text containing a lua script.
+                                                Must return struct with field "health"
+                                                representing whether object is a match (true or false)
+                                            type: string
+                                        version:
+                                            description: Version of the resource to fetch in the managed Cluster.
+                                            type: string
+                                    required:
+                                        - featureID
+                                        - group
+                                        - kind
+                                        - name
+                                        - version
+                                    type: object
+                                type: array
+                                x-kubernetes-list-type: atomic
+                            preDeployChecks:
+                                description: |-
+                                    PreDeployChecks is a slice of checks to run against the managed cluster
+                                    *before* Sveltos starts deploying resources.
+                                    Each check can use Lua scripts or CEL expressions to validate the cluster state.
+                                    If any check fails, the deployment of the associated feature is halted.
                                 items:
                                     properties:
                                         evaluateCEL:
@@ -7048,6 +7312,16 @@ spec:
                                                     type: string
                                             type: object
                                             x-kubernetes-map-type: atomic
+                                        watchFields:
+                                            description: |-
+                                                WatchFields is an optional list of dot-separated field paths to include
+                                                when computing the hash for this resource (e.g. "status.readyReplicas",
+                                                "metadata.labels"). When non-empty, only the listed fields are hashed and
+                                                IgnoreStatusChanges is ignored. Use this when you need to react to a
+                                                specific field without being sensitive to every other change on the object.
+                                            items:
+                                                type: string
+                                            type: array
                                     required:
                                         - identifier
                                         - resource
@@ -7073,9 +7347,10 @@ spec:
                                 type: integer
                             validateHealths:
                                 description: |-
-                                    ValidateHealths is a slice of Lua functions to run against
-                                    the managed cluster to validate the state of those add-ons/applications
-                                    is healthy
+                                    ValidateHealths is a slice of checks to run against the managed cluster
+                                    *after* resources are deployed to validate that the state of the
+                                    add-ons/applications is healthy.
+                                    Each check can select resources and validate them using Lua scripts or CEL expressions.
                                 items:
                                     properties:
                                         evaluateCEL:
@@ -8279,6 +8554,7 @@ spec:
                                                         Kind of the resource. Supported kinds are:
                                                         - ConfigMap/Secret
                                                         - flux GitRepository;OCIRepository;Bucket
+                                                        Required when RemoteURL is not set.
                                                     enum:
                                                         - GitRepository
                                                         - OCIRepository
@@ -8290,7 +8566,7 @@ spec:
                                                     description: |-
                                                         Name of the referenced resource.
                                                         Name can be expressed as a template and instantiate using any cluster field.
-                                                    minLength: 1
+                                                        Required when RemoteURL is not set.
                                                     type: string
                                                 namespace:
                                                     description: |-
@@ -8299,6 +8575,7 @@ spec:
                                                         be implicit set to cluster's namespace.
                                                         For Profile namespace must be left empty. Profile namespace will be used.
                                                         Namespace can be expressed as a template and instantiate using any cluster field.
+                                                        Not used when RemoteURL is set.
                                                     type: string
                                                 optional:
                                                     default: false
@@ -8313,6 +8590,52 @@ spec:
                                                         Defaults to 'None', which translates to the root path of the SourceRef.
                                                         Used only for GitRepository;OCIRepository;Bucket
                                                     type: string
+                                                remoteURL:
+                                                    description: |-
+                                                        RemoteURL configures fetching content from an HTTP/HTTPS endpoint.
+                                                        When set, Kind/Name/Namespace must be omitted.
+                                                    properties:
+                                                        interval:
+                                                            description: |-
+                                                                Interval defines how often Sveltos re-fetches the URL to detect changes.
+                                                                Defaults to 5 minutes.
+                                                            type: string
+                                                        secretRef:
+                                                            description: |-
+                                                                SecretRef references a Secret in the management cluster containing optional
+                                                                credentials for fetching the URL. Supported Secret keys:
+                                                                  "token"              — Bearer token (Authorization: Bearer <token>)
+                                                                  "username"+"password" — HTTP Basic Auth
+                                                                  "caFile"             — PEM-encoded CA certificate for TLS verification
+                                                            properties:
+                                                                name:
+                                                                    default: ""
+                                                                    description: |-
+                                                                        Name of the referent.
+                                                                        This field is effectively required, but due to backwards compatibility is
+                                                                        allowed to be empty. Instances of this type with an empty value here are
+                                                                        almost certainly wrong.
+                                                                        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                                                    type: string
+                                                            type: object
+                                                            x-kubernetes-map-type: atomic
+                                                        template:
+                                                            description: |-
+                                                                Template indicates that the content served at URL is a Go template that
+                                                                must be instantiated using cluster fields and templateResourceRefs values
+                                                                before deployment. Equivalent to the projectsveltos.io/template annotation
+                                                                on a ConfigMap or Secret.
+                                                            type: boolean
+                                                        url:
+                                                            description: |-
+                                                                URL is an HTTP/HTTPS endpoint serving raw YAML/JSON/KYAML content.
+                                                                Sveltos fetches the content on every reconciliation and redeploys if the
+                                                                content hash has changed.
+                                                            pattern: ^https?://
+                                                            type: string
+                                                    required:
+                                                        - url
+                                                    type: object
                                                 skipNamespaceCreation:
                                                     default: false
                                                     description: |-
@@ -8336,17 +8659,18 @@ spec:
                                                     format: int32
                                                     minimum: 1
                                                     type: integer
-                                            required:
-                                                - kind
-                                                - name
                                             type: object
+                                            x-kubernetes-validations:
+                                                - message: either remoteURL or kind must be set, but not both
+                                                  rule: has(self.remoteURL) != has(self.kind)
                                         type: array
                                         x-kubernetes-list-type: atomic
                                     postDeleteChecks:
                                         description: |-
-                                            PostDeleteChecks is a slice of Lua functions to run against
-                                            the managed cluster *after* Sveltos has deleted all resources.
+                                            PostDeleteChecks is a slice of checks to run against the managed cluster
+                                            *after* Sveltos has deleted all resources.
                                             This ensures that the environment has reached the desired clean state.
+                                            Each check can select resources and validate them using Lua scripts or CEL expressions.
                                         items:
                                             properties:
                                                 evaluateCEL:
@@ -8447,9 +8771,114 @@ spec:
                                         x-kubernetes-list-type: atomic
                                     preDeleteChecks:
                                         description: |-
-                                            PreDeleteChecks is a slice of Lua functions to run against
-                                            the managed cluster *before* Sveltos starts deleting resources.
+                                            PreDeleteChecks is a slice of checks to run against the managed cluster
+                                            *before* Sveltos starts deleting resources.
                                             If any of these fail, the deletion process is halted.
+                                            Each check can select resources and validate them using Lua scripts or CEL expressions.
+                                        items:
+                                            properties:
+                                                evaluateCEL:
+                                                    description: |-
+                                                        EvaluateCEL contains a list of named CEL (Common Expression Language) rules.
+                                                        Each rule will be evaluated in order against each object selected based on
+                                                        the criteria defined above. Each rule's expression must return a boolean value
+                                                        indicating whether the object is a match.
+
+                                                        Evaluation stops at the first rule that returns true; subsequent
+                                                        rules will not be evaluated.
+                                                    items:
+                                                        description: CELRule defines a named CEL rule used in EvaluateCEL.
+                                                        properties:
+                                                            name:
+                                                                description: Name is a human-readable identifier for the rule.
+                                                                type: string
+                                                            rule:
+                                                                description: |-
+                                                                    Rule is the CEL (Common Expression Language) expression to evaluate.
+                                                                    It must return a bool
+                                                                type: string
+                                                        required:
+                                                            - name
+                                                            - rule
+                                                        type: object
+                                                    type: array
+                                                featureID:
+                                                    description: |-
+                                                        FeatureID is an indentifier of the feature (Helm/Kustomize/Resources)
+                                                        This field indicates when to run this check.
+                                                        For instance:
+                                                        - if set to Helm this check will be run after all helm
+                                                        charts specified in the ClusterProfile are deployed.
+                                                        - if set to Resources this check will be run after the content
+                                                        of all the ConfigMaps/Secrets referenced by ClusterProfile in the
+                                                        PolicyRef sections is deployed
+                                                    enum:
+                                                        - Resources
+                                                        - Helm
+                                                        - Kustomize
+                                                    type: string
+                                                group:
+                                                    description: Group of the resource to fetch in the managed Cluster.
+                                                    type: string
+                                                kind:
+                                                    description: Kind of the resource to fetch in the managed Cluster.
+                                                    minLength: 1
+                                                    type: string
+                                                labelFilters:
+                                                    description: LabelFilters allows to filter resources based on current labels.
+                                                    items:
+                                                        properties:
+                                                            key:
+                                                                description: Key is the label key
+                                                                type: string
+                                                            operation:
+                                                                description: Operation is the comparison operation
+                                                                enum:
+                                                                    - Equal
+                                                                    - Different
+                                                                    - Has
+                                                                    - DoesNotHave
+                                                                type: string
+                                                            value:
+                                                                description: Value is the label value
+                                                                type: string
+                                                        required:
+                                                            - key
+                                                            - operation
+                                                        type: object
+                                                    type: array
+                                                name:
+                                                    description: Name is the name of this check
+                                                    type: string
+                                                namespace:
+                                                    description: |-
+                                                        Namespace of the resource to fetch in the managed Cluster.
+                                                        Empty for resources scoped at cluster level.
+                                                    type: string
+                                                script:
+                                                    description: |-
+                                                        Script is a text containing a lua script.
+                                                        Must return struct with field "health"
+                                                        representing whether object is a match (true or false)
+                                                    type: string
+                                                version:
+                                                    description: Version of the resource to fetch in the managed Cluster.
+                                                    type: string
+                                            required:
+                                                - featureID
+                                                - group
+                                                - kind
+                                                - name
+                                                - version
+                                            type: object
+                                        type: array
+                                        x-kubernetes-list-type: atomic
+                                    preDeployChecks:
+                                        description: |-
+                                            PreDeployChecks is a slice of checks to run against the managed cluster
+                                            *before* Sveltos starts deploying resources.
+                                            Each check can use Lua scripts or CEL expressions to validate the cluster state.
+                                            If any check fails, the deployment of the associated feature is halted.
                                         items:
                                             properties:
                                                 evaluateCEL:
@@ -8663,6 +9092,16 @@ spec:
                                                             type: string
                                                     type: object
                                                     x-kubernetes-map-type: atomic
+                                                watchFields:
+                                                    description: |-
+                                                        WatchFields is an optional list of dot-separated field paths to include
+                                                        when computing the hash for this resource (e.g. "status.readyReplicas",
+                                                        "metadata.labels"). When non-empty, only the listed fields are hashed and
+                                                        IgnoreStatusChanges is ignored. Use this when you need to react to a
+                                                        specific field without being sensitive to every other change on the object.
+                                                    items:
+                                                        type: string
+                                                    type: array
                                             required:
                                                 - identifier
                                                 - resource
@@ -8688,9 +9127,10 @@ spec:
                                         type: integer
                                     validateHealths:
                                         description: |-
-                                            ValidateHealths is a slice of Lua functions to run against
-                                            the managed cluster to validate the state of those add-ons/applications
-                                            is healthy
+                                            ValidateHealths is a slice of checks to run against the managed cluster
+                                            *after* resources are deployed to validate that the state of the
+                                            add-ons/applications is healthy.
+                                            Each check can select resources and validate them using Lua scripts or CEL expressions.
                                         items:
                                             properties:
                                                 evaluateCEL:
@@ -8982,6 +9422,7 @@ spec:
                                                                             Kind of the resource. Supported kinds are:
                                                                             - ConfigMap/Secret
                                                                             - flux GitRepository;OCIRepository;Bucket
+                                                                            Required when RemoteURL is not set.
                                                                         enum:
                                                                             - GitRepository
                                                                             - OCIRepository
@@ -8993,7 +9434,7 @@ spec:
                                                                         description: |-
                                                                             Name of the referenced resource.
                                                                             Name can be expressed as a template and instantiate using any cluster field.
-                                                                        minLength: 1
+                                                                            Required when RemoteURL is not set.
                                                                         type: string
                                                                     namespace:
                                                                         description: |-
@@ -9002,6 +9443,7 @@ spec:
                                                                             be implicit set to cluster's namespace.
                                                                             For Profile namespace must be left empty. Profile namespace will be used.
                                                                             Namespace can be expressed as a template and instantiate using any cluster field.
+                                                                            Not used when RemoteURL is set.
                                                                         type: string
                                                                     optional:
                                                                         default: false
@@ -9016,6 +9458,52 @@ spec:
                                                                             Defaults to 'None', which translates to the root path of the SourceRef.
                                                                             Used only for GitRepository;OCIRepository;Bucket
                                                                         type: string
+                                                                    remoteURL:
+                                                                        description: |-
+                                                                            RemoteURL configures fetching content from an HTTP/HTTPS endpoint.
+                                                                            When set, Kind/Name/Namespace must be omitted.
+                                                                        properties:
+                                                                            interval:
+                                                                                description: |-
+                                                                                    Interval defines how often Sveltos re-fetches the URL to detect changes.
+                                                                                    Defaults to 5 minutes.
+                                                                                type: string
+                                                                            secretRef:
+                                                                                description: |-
+                                                                                    SecretRef references a Secret in the management cluster containing optional
+                                                                                    credentials for fetching the URL. Supported Secret keys:
+                                                                                      "token"              — Bearer token (Authorization: Bearer <token>)
+                                                                                      "username"+"password" — HTTP Basic Auth
+                                                                                      "caFile"             — PEM-encoded CA certificate for TLS verification
+                                                                                properties:
+                                                                                    name:
+                                                                                        default: ""
+                                                                                        description: |-
+                                                                                            Name of the referent.
+                                                                                            This field is effectively required, but due to backwards compatibility is
+                                                                                            allowed to be empty. Instances of this type with an empty value here are
+                                                                                            almost certainly wrong.
+                                                                                            More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                                                                        type: string
+                                                                                type: object
+                                                                                x-kubernetes-map-type: atomic
+                                                                            template:
+                                                                                description: |-
+                                                                                    Template indicates that the content served at URL is a Go template that
+                                                                                    must be instantiated using cluster fields and templateResourceRefs values
+                                                                                    before deployment. Equivalent to the projectsveltos.io/template annotation
+                                                                                    on a ConfigMap or Secret.
+                                                                                type: boolean
+                                                                            url:
+                                                                                description: |-
+                                                                                    URL is an HTTP/HTTPS endpoint serving raw YAML/JSON/KYAML content.
+                                                                                    Sveltos fetches the content on every reconciliation and redeploys if the
+                                                                                    content hash has changed.
+                                                                                pattern: ^https?://
+                                                                                type: string
+                                                                        required:
+                                                                            - url
+                                                                        type: object
                                                                     skipNamespaceCreation:
                                                                         default: false
                                                                         description: |-
@@ -9039,10 +9527,10 @@ spec:
                                                                         format: int32
                                                                         minimum: 1
                                                                         type: integer
-                                                                required:
-                                                                    - kind
-                                                                    - name
                                                                 type: object
+                                                                x-kubernetes-validations:
+                                                                    - message: either remoteURL or kind must be set, but not both
+                                                                      rule: has(self.remoteURL) != has(self.kind)
                                                             type: array
                                                         promotionWindow:
                                                             description: |-
@@ -9215,6 +9703,7 @@ spec:
                                                                             Kind of the resource. Supported kinds are:
                                                                             - ConfigMap/Secret
                                                                             - flux GitRepository;OCIRepository;Bucket
+                                                                            Required when RemoteURL is not set.
                                                                         enum:
                                                                             - GitRepository
                                                                             - OCIRepository
@@ -9226,7 +9715,7 @@ spec:
                                                                         description: |-
                                                                             Name of the referenced resource.
                                                                             Name can be expressed as a template and instantiate using any cluster field.
-                                                                        minLength: 1
+                                                                            Required when RemoteURL is not set.
                                                                         type: string
                                                                     namespace:
                                                                         description: |-
@@ -9235,6 +9724,7 @@ spec:
                                                                             be implicit set to cluster's namespace.
                                                                             For Profile namespace must be left empty. Profile namespace will be used.
                                                                             Namespace can be expressed as a template and instantiate using any cluster field.
+                                                                            Not used when RemoteURL is set.
                                                                         type: string
                                                                     optional:
                                                                         default: false
@@ -9249,6 +9739,52 @@ spec:
                                                                             Defaults to 'None', which translates to the root path of the SourceRef.
                                                                             Used only for GitRepository;OCIRepository;Bucket
                                                                         type: string
+                                                                    remoteURL:
+                                                                        description: |-
+                                                                            RemoteURL configures fetching content from an HTTP/HTTPS endpoint.
+                                                                            When set, Kind/Name/Namespace must be omitted.
+                                                                        properties:
+                                                                            interval:
+                                                                                description: |-
+                                                                                    Interval defines how often Sveltos re-fetches the URL to detect changes.
+                                                                                    Defaults to 5 minutes.
+                                                                                type: string
+                                                                            secretRef:
+                                                                                description: |-
+                                                                                    SecretRef references a Secret in the management cluster containing optional
+                                                                                    credentials for fetching the URL. Supported Secret keys:
+                                                                                      "token"              — Bearer token (Authorization: Bearer <token>)
+                                                                                      "username"+"password" — HTTP Basic Auth
+                                                                                      "caFile"             — PEM-encoded CA certificate for TLS verification
+                                                                                properties:
+                                                                                    name:
+                                                                                        default: ""
+                                                                                        description: |-
+                                                                                            Name of the referent.
+                                                                                            This field is effectively required, but due to backwards compatibility is
+                                                                                            allowed to be empty. Instances of this type with an empty value here are
+                                                                                            almost certainly wrong.
+                                                                                            More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                                                                        type: string
+                                                                                type: object
+                                                                                x-kubernetes-map-type: atomic
+                                                                            template:
+                                                                                description: |-
+                                                                                    Template indicates that the content served at URL is a Go template that
+                                                                                    must be instantiated using cluster fields and templateResourceRefs values
+                                                                                    before deployment. Equivalent to the projectsveltos.io/template annotation
+                                                                                    on a ConfigMap or Secret.
+                                                                                type: boolean
+                                                                            url:
+                                                                                description: |-
+                                                                                    URL is an HTTP/HTTPS endpoint serving raw YAML/JSON/KYAML content.
+                                                                                    Sveltos fetches the content on every reconciliation and redeploys if the
+                                                                                    content hash has changed.
+                                                                                pattern: ^https?://
+                                                                                type: string
+                                                                        required:
+                                                                            - url
+                                                                        type: object
                                                                     skipNamespaceCreation:
                                                                         default: false
                                                                         description: |-
@@ -9272,10 +9808,10 @@ spec:
                                                                         format: int32
                                                                         minimum: 1
                                                                         type: integer
-                                                                required:
-                                                                    - kind
-                                                                    - name
                                                                 type: object
+                                                                x-kubernetes-validations:
+                                                                    - message: either remoteURL or kind must be set, but not both
+                                                                      rule: has(self.remoteURL) != has(self.kind)
                                                             type: array
                                                     type: object
                                             type: object
@@ -10640,6 +11176,7 @@ spec:
                                                         Kind of the resource. Supported kinds are:
                                                         - ConfigMap/Secret
                                                         - flux GitRepository;OCIRepository;Bucket
+                                                        Required when RemoteURL is not set.
                                                     enum:
                                                         - GitRepository
                                                         - OCIRepository
@@ -10651,7 +11188,7 @@ spec:
                                                     description: |-
                                                         Name of the referenced resource.
                                                         Name can be expressed as a template and instantiate using any cluster field.
-                                                    minLength: 1
+                                                        Required when RemoteURL is not set.
                                                     type: string
                                                 namespace:
                                                     description: |-
@@ -10660,6 +11197,7 @@ spec:
                                                         be implicit set to cluster's namespace.
                                                         For Profile namespace must be left empty. Profile namespace will be used.
                                                         Namespace can be expressed as a template and instantiate using any cluster field.
+                                                        Not used when RemoteURL is set.
                                                     type: string
                                                 optional:
                                                     default: false
@@ -10674,6 +11212,52 @@ spec:
                                                         Defaults to 'None', which translates to the root path of the SourceRef.
                                                         Used only for GitRepository;OCIRepository;Bucket
                                                     type: string
+                                                remoteURL:
+                                                    description: |-
+                                                        RemoteURL configures fetching content from an HTTP/HTTPS endpoint.
+                                                        When set, Kind/Name/Namespace must be omitted.
+                                                    properties:
+                                                        interval:
+                                                            description: |-
+                                                                Interval defines how often Sveltos re-fetches the URL to detect changes.
+                                                                Defaults to 5 minutes.
+                                                            type: string
+                                                        secretRef:
+                                                            description: |-
+                                                                SecretRef references a Secret in the management cluster containing optional
+                                                                credentials for fetching the URL. Supported Secret keys:
+                                                                  "token"              — Bearer token (Authorization: Bearer <token>)
+                                                                  "username"+"password" — HTTP Basic Auth
+                                                                  "caFile"             — PEM-encoded CA certificate for TLS verification
+                                                            properties:
+                                                                name:
+                                                                    default: ""
+                                                                    description: |-
+                                                                        Name of the referent.
+                                                                        This field is effectively required, but due to backwards compatibility is
+                                                                        allowed to be empty. Instances of this type with an empty value here are
+                                                                        almost certainly wrong.
+                                                                        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                                                    type: string
+                                                            type: object
+                                                            x-kubernetes-map-type: atomic
+                                                        template:
+                                                            description: |-
+                                                                Template indicates that the content served at URL is a Go template that
+                                                                must be instantiated using cluster fields and templateResourceRefs values
+                                                                before deployment. Equivalent to the projectsveltos.io/template annotation
+                                                                on a ConfigMap or Secret.
+                                                            type: boolean
+                                                        url:
+                                                            description: |-
+                                                                URL is an HTTP/HTTPS endpoint serving raw YAML/JSON/KYAML content.
+                                                                Sveltos fetches the content on every reconciliation and redeploys if the
+                                                                content hash has changed.
+                                                            pattern: ^https?://
+                                                            type: string
+                                                    required:
+                                                        - url
+                                                    type: object
                                                 skipNamespaceCreation:
                                                     default: false
                                                     description: |-
@@ -10697,17 +11281,18 @@ spec:
                                                     format: int32
                                                     minimum: 1
                                                     type: integer
-                                            required:
-                                                - kind
-                                                - name
                                             type: object
+                                            x-kubernetes-validations:
+                                                - message: either remoteURL or kind must be set, but not both
+                                                  rule: has(self.remoteURL) != has(self.kind)
                                         type: array
                                         x-kubernetes-list-type: atomic
                                     postDeleteChecks:
                                         description: |-
-                                            PostDeleteChecks is a slice of Lua functions to run against
-                                            the managed cluster *after* Sveltos has deleted all resources.
+                                            PostDeleteChecks is a slice of checks to run against the managed cluster
+                                            *after* Sveltos has deleted all resources.
                                             This ensures that the environment has reached the desired clean state.
+                                            Each check can select resources and validate them using Lua scripts or CEL expressions.
                                         items:
                                             properties:
                                                 evaluateCEL:
@@ -10808,9 +11393,114 @@ spec:
                                         x-kubernetes-list-type: atomic
                                     preDeleteChecks:
                                         description: |-
-                                            PreDeleteChecks is a slice of Lua functions to run against
-                                            the managed cluster *before* Sveltos starts deleting resources.
+                                            PreDeleteChecks is a slice of checks to run against the managed cluster
+                                            *before* Sveltos starts deleting resources.
                                             If any of these fail, the deletion process is halted.
+                                            Each check can select resources and validate them using Lua scripts or CEL expressions.
+                                        items:
+                                            properties:
+                                                evaluateCEL:
+                                                    description: |-
+                                                        EvaluateCEL contains a list of named CEL (Common Expression Language) rules.
+                                                        Each rule will be evaluated in order against each object selected based on
+                                                        the criteria defined above. Each rule's expression must return a boolean value
+                                                        indicating whether the object is a match.
+
+                                                        Evaluation stops at the first rule that returns true; subsequent
+                                                        rules will not be evaluated.
+                                                    items:
+                                                        description: CELRule defines a named CEL rule used in EvaluateCEL.
+                                                        properties:
+                                                            name:
+                                                                description: Name is a human-readable identifier for the rule.
+                                                                type: string
+                                                            rule:
+                                                                description: |-
+                                                                    Rule is the CEL (Common Expression Language) expression to evaluate.
+                                                                    It must return a bool
+                                                                type: string
+                                                        required:
+                                                            - name
+                                                            - rule
+                                                        type: object
+                                                    type: array
+                                                featureID:
+                                                    description: |-
+                                                        FeatureID is an indentifier of the feature (Helm/Kustomize/Resources)
+                                                        This field indicates when to run this check.
+                                                        For instance:
+                                                        - if set to Helm this check will be run after all helm
+                                                        charts specified in the ClusterProfile are deployed.
+                                                        - if set to Resources this check will be run after the content
+                                                        of all the ConfigMaps/Secrets referenced by ClusterProfile in the
+                                                        PolicyRef sections is deployed
+                                                    enum:
+                                                        - Resources
+                                                        - Helm
+                                                        - Kustomize
+                                                    type: string
+                                                group:
+                                                    description: Group of the resource to fetch in the managed Cluster.
+                                                    type: string
+                                                kind:
+                                                    description: Kind of the resource to fetch in the managed Cluster.
+                                                    minLength: 1
+                                                    type: string
+                                                labelFilters:
+                                                    description: LabelFilters allows to filter resources based on current labels.
+                                                    items:
+                                                        properties:
+                                                            key:
+                                                                description: Key is the label key
+                                                                type: string
+                                                            operation:
+                                                                description: Operation is the comparison operation
+                                                                enum:
+                                                                    - Equal
+                                                                    - Different
+                                                                    - Has
+                                                                    - DoesNotHave
+                                                                type: string
+                                                            value:
+                                                                description: Value is the label value
+                                                                type: string
+                                                        required:
+                                                            - key
+                                                            - operation
+                                                        type: object
+                                                    type: array
+                                                name:
+                                                    description: Name is the name of this check
+                                                    type: string
+                                                namespace:
+                                                    description: |-
+                                                        Namespace of the resource to fetch in the managed Cluster.
+                                                        Empty for resources scoped at cluster level.
+                                                    type: string
+                                                script:
+                                                    description: |-
+                                                        Script is a text containing a lua script.
+                                                        Must return struct with field "health"
+                                                        representing whether object is a match (true or false)
+                                                    type: string
+                                                version:
+                                                    description: Version of the resource to fetch in the managed Cluster.
+                                                    type: string
+                                            required:
+                                                - featureID
+                                                - group
+                                                - kind
+                                                - name
+                                                - version
+                                            type: object
+                                        type: array
+                                        x-kubernetes-list-type: atomic
+                                    preDeployChecks:
+                                        description: |-
+                                            PreDeployChecks is a slice of checks to run against the managed cluster
+                                            *before* Sveltos starts deploying resources.
+                                            Each check can use Lua scripts or CEL expressions to validate the cluster state.
+                                            If any check fails, the deployment of the associated feature is halted.
                                         items:
                                             properties:
                                                 evaluateCEL:
@@ -11032,6 +11722,16 @@ spec:
                                                             type: string
                                                     type: object
                                                     x-kubernetes-map-type: atomic
+                                                watchFields:
+                                                    description: |-
+                                                        WatchFields is an optional list of dot-separated field paths to include
+                                                        when computing the hash for this resource (e.g. "status.readyReplicas",
+                                                        "metadata.labels"). When non-empty, only the listed fields are hashed and
+                                                        IgnoreStatusChanges is ignored. Use this when you need to react to a
+                                                        specific field without being sensitive to every other change on the object.
+                                                    items:
+                                                        type: string
+                                                    type: array
                                             required:
                                                 - identifier
                                                 - resource
@@ -11057,9 +11757,10 @@ spec:
                                         type: integer
                                     validateHealths:
                                         description: |-
-                                            ValidateHealths is a slice of Lua functions to run against
-                                            the managed cluster to validate the state of those add-ons/applications
-                                            is healthy
+                                            ValidateHealths is a slice of checks to run against the managed cluster
+                                            *after* resources are deployed to validate that the state of the
+                                            add-ons/applications is healthy.
+                                            Each check can select resources and validate them using Lua scripts or CEL expressions.
                                         items:
                                             properties:
                                                 evaluateCEL:
@@ -11253,6 +11954,12 @@ spec:
                                             description: LastAppliedTime is the time feature was last reconciled
                                             format: date-time
                                             type: string
+                                        resourceSummaryDeployed:
+                                            description: |-
+                                                ResourceSummaryDeployed tracks whether a ResourceSummary was deployed
+                                                to the managed cluster for drift detection. nil means unknown (upgrade
+                                                scenario); true means currently deployed; false means removed.
+                                            type: boolean
                                         status:
                                             description: Status represents the state of the feature in the workload cluster
                                             enum:
@@ -12362,6 +13069,7 @@ spec:
                                                 Kind of the resource. Supported kinds are:
                                                 - ConfigMap/Secret
                                                 - flux GitRepository;OCIRepository;Bucket
+                                                Required when RemoteURL is not set.
                                             enum:
                                                 - GitRepository
                                                 - OCIRepository
@@ -12373,7 +13081,7 @@ spec:
                                             description: |-
                                                 Name of the referenced resource.
                                                 Name can be expressed as a template and instantiate using any cluster field.
-                                            minLength: 1
+                                                Required when RemoteURL is not set.
                                             type: string
                                         namespace:
                                             description: |-
@@ -12382,6 +13090,7 @@ spec:
                                                 be implicit set to cluster's namespace.
                                                 For Profile namespace must be left empty. Profile namespace will be used.
                                                 Namespace can be expressed as a template and instantiate using any cluster field.
+                                                Not used when RemoteURL is set.
                                             type: string
                                         optional:
                                             default: false
@@ -12396,6 +13105,52 @@ spec:
                                                 Defaults to 'None', which translates to the root path of the SourceRef.
                                                 Used only for GitRepository;OCIRepository;Bucket
                                             type: string
+                                        remoteURL:
+                                            description: |-
+                                                RemoteURL configures fetching content from an HTTP/HTTPS endpoint.
+                                                When set, Kind/Name/Namespace must be omitted.
+                                            properties:
+                                                interval:
+                                                    description: |-
+                                                        Interval defines how often Sveltos re-fetches the URL to detect changes.
+                                                        Defaults to 5 minutes.
+                                                    type: string
+                                                secretRef:
+                                                    description: |-
+                                                        SecretRef references a Secret in the management cluster containing optional
+                                                        credentials for fetching the URL. Supported Secret keys:
+                                                          "token"              — Bearer token (Authorization: Bearer <token>)
+                                                          "username"+"password" — HTTP Basic Auth
+                                                          "caFile"             — PEM-encoded CA certificate for TLS verification
+                                                    properties:
+                                                        name:
+                                                            default: ""
+                                                            description: |-
+                                                                Name of the referent.
+                                                                This field is effectively required, but due to backwards compatibility is
+                                                                allowed to be empty. Instances of this type with an empty value here are
+                                                                almost certainly wrong.
+                                                                More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                                            type: string
+                                                    type: object
+                                                    x-kubernetes-map-type: atomic
+                                                template:
+                                                    description: |-
+                                                        Template indicates that the content served at URL is a Go template that
+                                                        must be instantiated using cluster fields and templateResourceRefs values
+                                                        before deployment. Equivalent to the projectsveltos.io/template annotation
+                                                        on a ConfigMap or Secret.
+                                                    type: boolean
+                                                url:
+                                                    description: |-
+                                                        URL is an HTTP/HTTPS endpoint serving raw YAML/JSON/KYAML content.
+                                                        Sveltos fetches the content on every reconciliation and redeploys if the
+                                                        content hash has changed.
+                                                    pattern: ^https?://
+                                                    type: string
+                                            required:
+                                                - url
+                                            type: object
                                         skipNamespaceCreation:
                                             default: false
                                             description: |-
@@ -12419,10 +13174,10 @@ spec:
                                             format: int32
                                             minimum: 1
                                             type: integer
-                                    required:
-                                        - kind
-                                        - name
                                     type: object
+                                    x-kubernetes-validations:
+                                        - message: either remoteURL or kind must be set, but not both
+                                          rule: has(self.remoteURL) != has(self.kind)
                                 type: array
                                 x-kubernetes-list-type: atomic
                             postDeleteChecks:
@@ -12533,6 +13288,110 @@ spec:
                                     PreDeleteChecks is a slice of Lua functions to run against
                                     the managed cluster *before* Sveltos starts deleting resources.
                                     If any of these fail, the deletion process is halted.
+                                items:
+                                    properties:
+                                        evaluateCEL:
+                                            description: |-
+                                                EvaluateCEL contains a list of named CEL (Common Expression Language) rules.
+                                                Each rule will be evaluated in order against each object selected based on
+                                                the criteria defined above. Each rule's expression must return a boolean value
+                                                indicating whether the object is a match.
+
+                                                Evaluation stops at the first rule that returns true; subsequent
+                                                rules will not be evaluated.
+                                            items:
+                                                description: CELRule defines a named CEL rule used in EvaluateCEL.
+                                                properties:
+                                                    name:
+                                                        description: Name is a human-readable identifier for the rule.
+                                                        type: string
+                                                    rule:
+                                                        description: |-
+                                                            Rule is the CEL (Common Expression Language) expression to evaluate.
+                                                            It must return a bool
+                                                        type: string
+                                                required:
+                                                    - name
+                                                    - rule
+                                                type: object
+                                            type: array
+                                        featureID:
+                                            description: |-
+                                                FeatureID is an indentifier of the feature (Helm/Kustomize/Resources)
+                                                This field indicates when to run this check.
+                                                For instance:
+                                                - if set to Helm this check will be run after all helm
+                                                charts specified in the ClusterProfile are deployed.
+                                                - if set to Resources this check will be run after the content
+                                                of all the ConfigMaps/Secrets referenced by ClusterProfile in the
+                                                PolicyRef sections is deployed
+                                            enum:
+                                                - Resources
+                                                - Helm
+                                                - Kustomize
+                                            type: string
+                                        group:
+                                            description: Group of the resource to fetch in the managed Cluster.
+                                            type: string
+                                        kind:
+                                            description: Kind of the resource to fetch in the managed Cluster.
+                                            minLength: 1
+                                            type: string
+                                        labelFilters:
+                                            description: LabelFilters allows to filter resources based on current labels.
+                                            items:
+                                                properties:
+                                                    key:
+                                                        description: Key is the label key
+                                                        type: string
+                                                    operation:
+                                                        description: Operation is the comparison operation
+                                                        enum:
+                                                            - Equal
+                                                            - Different
+                                                            - Has
+                                                            - DoesNotHave
+                                                        type: string
+                                                    value:
+                                                        description: Value is the label value
+                                                        type: string
+                                                required:
+                                                    - key
+                                                    - operation
+                                                type: object
+                                            type: array
+                                        name:
+                                            description: Name is the name of this check
+                                            type: string
+                                        namespace:
+                                            description: |-
+                                                Namespace of the resource to fetch in the managed Cluster.
+                                                Empty for resources scoped at cluster level.
+                                            type: string
+                                        script:
+                                            description: |-
+                                                Script is a text containing a lua script.
+                                                Must return struct with field "health"
+                                                representing whether object is a match (true or false)
+                                            type: string
+                                        version:
+                                            description: Version of the resource to fetch in the managed Cluster.
+                                            type: string
+                                    required:
+                                        - featureID
+                                        - group
+                                        - kind
+                                        - name
+                                        - version
+                                    type: object
+                                type: array
+                                x-kubernetes-list-type: atomic
+                            preDeployChecks:
+                                description: |-
+                                    PreDeployChecks is a slice of checks to run against the managed cluster
+                                    *before* Sveltos starts deploying resources.
+                                    Each check can use Lua scripts or CEL expressions to validate the cluster state.
+                                    If any check fails, the deployment of the associated feature is halted.
                                 items:
                                     properties:
                                         evaluateCEL:
@@ -12854,6 +13713,16 @@ spec:
                                                     type: string
                                             type: object
                                             x-kubernetes-map-type: atomic
+                                        watchFields:
+                                            description: |-
+                                                WatchFields is an optional list of dot-separated field paths to include
+                                                when computing the hash for this resource (e.g. "status.readyReplicas",
+                                                "metadata.labels"). When non-empty, only the listed fields are hashed and
+                                                IgnoreStatusChanges is ignored. Use this when you need to react to a
+                                                specific field without being sensitive to every other change on the object.
+                                            items:
+                                                type: string
+                                            type: array
                                     required:
                                         - identifier
                                         - resource
@@ -14104,6 +14973,7 @@ spec:
                                                 Kind of the resource. Supported kinds are:
                                                 - ConfigMap/Secret
                                                 - flux GitRepository;OCIRepository;Bucket
+                                                Required when RemoteURL is not set.
                                             enum:
                                                 - GitRepository
                                                 - OCIRepository
@@ -14115,7 +14985,7 @@ spec:
                                             description: |-
                                                 Name of the referenced resource.
                                                 Name can be expressed as a template and instantiate using any cluster field.
-                                            minLength: 1
+                                                Required when RemoteURL is not set.
                                             type: string
                                         namespace:
                                             description: |-
@@ -14124,6 +14994,7 @@ spec:
                                                 be implicit set to cluster's namespace.
                                                 For Profile namespace must be left empty. Profile namespace will be used.
                                                 Namespace can be expressed as a template and instantiate using any cluster field.
+                                                Not used when RemoteURL is set.
                                             type: string
                                         optional:
                                             default: false
@@ -14138,6 +15009,52 @@ spec:
                                                 Defaults to 'None', which translates to the root path of the SourceRef.
                                                 Used only for GitRepository;OCIRepository;Bucket
                                             type: string
+                                        remoteURL:
+                                            description: |-
+                                                RemoteURL configures fetching content from an HTTP/HTTPS endpoint.
+                                                When set, Kind/Name/Namespace must be omitted.
+                                            properties:
+                                                interval:
+                                                    description: |-
+                                                        Interval defines how often Sveltos re-fetches the URL to detect changes.
+                                                        Defaults to 5 minutes.
+                                                    type: string
+                                                secretRef:
+                                                    description: |-
+                                                        SecretRef references a Secret in the management cluster containing optional
+                                                        credentials for fetching the URL. Supported Secret keys:
+                                                          "token"              — Bearer token (Authorization: Bearer <token>)
+                                                          "username"+"password" — HTTP Basic Auth
+                                                          "caFile"             — PEM-encoded CA certificate for TLS verification
+                                                    properties:
+                                                        name:
+                                                            default: ""
+                                                            description: |-
+                                                                Name of the referent.
+                                                                This field is effectively required, but due to backwards compatibility is
+                                                                allowed to be empty. Instances of this type with an empty value here are
+                                                                almost certainly wrong.
+                                                                More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                                            type: string
+                                                    type: object
+                                                    x-kubernetes-map-type: atomic
+                                                template:
+                                                    description: |-
+                                                        Template indicates that the content served at URL is a Go template that
+                                                        must be instantiated using cluster fields and templateResourceRefs values
+                                                        before deployment. Equivalent to the projectsveltos.io/template annotation
+                                                        on a ConfigMap or Secret.
+                                                    type: boolean
+                                                url:
+                                                    description: |-
+                                                        URL is an HTTP/HTTPS endpoint serving raw YAML/JSON/KYAML content.
+                                                        Sveltos fetches the content on every reconciliation and redeploys if the
+                                                        content hash has changed.
+                                                    pattern: ^https?://
+                                                    type: string
+                                            required:
+                                                - url
+                                            type: object
                                         skipNamespaceCreation:
                                             default: false
                                             description: |-
@@ -14161,17 +15078,18 @@ spec:
                                             format: int32
                                             minimum: 1
                                             type: integer
-                                    required:
-                                        - kind
-                                        - name
                                     type: object
+                                    x-kubernetes-validations:
+                                        - message: either remoteURL or kind must be set, but not both
+                                          rule: has(self.remoteURL) != has(self.kind)
                                 type: array
                                 x-kubernetes-list-type: atomic
                             postDeleteChecks:
                                 description: |-
-                                    PostDeleteChecks is a slice of Lua functions to run against
-                                    the managed cluster *after* Sveltos has deleted all resources.
+                                    PostDeleteChecks is a slice of checks to run against the managed cluster
+                                    *after* Sveltos has deleted all resources.
                                     This ensures that the environment has reached the desired clean state.
+                                    Each check can select resources and validate them using Lua scripts or CEL expressions.
                                 items:
                                     properties:
                                         evaluateCEL:
@@ -14272,9 +15190,114 @@ spec:
                                 x-kubernetes-list-type: atomic
                             preDeleteChecks:
                                 description: |-
-                                    PreDeleteChecks is a slice of Lua functions to run against
-                                    the managed cluster *before* Sveltos starts deleting resources.
+                                    PreDeleteChecks is a slice of checks to run against the managed cluster
+                                    *before* Sveltos starts deleting resources.
                                     If any of these fail, the deletion process is halted.
+                                    Each check can select resources and validate them using Lua scripts or CEL expressions.
+                                items:
+                                    properties:
+                                        evaluateCEL:
+                                            description: |-
+                                                EvaluateCEL contains a list of named CEL (Common Expression Language) rules.
+                                                Each rule will be evaluated in order against each object selected based on
+                                                the criteria defined above. Each rule's expression must return a boolean value
+                                                indicating whether the object is a match.
+
+                                                Evaluation stops at the first rule that returns true; subsequent
+                                                rules will not be evaluated.
+                                            items:
+                                                description: CELRule defines a named CEL rule used in EvaluateCEL.
+                                                properties:
+                                                    name:
+                                                        description: Name is a human-readable identifier for the rule.
+                                                        type: string
+                                                    rule:
+                                                        description: |-
+                                                            Rule is the CEL (Common Expression Language) expression to evaluate.
+                                                            It must return a bool
+                                                        type: string
+                                                required:
+                                                    - name
+                                                    - rule
+                                                type: object
+                                            type: array
+                                        featureID:
+                                            description: |-
+                                                FeatureID is an indentifier of the feature (Helm/Kustomize/Resources)
+                                                This field indicates when to run this check.
+                                                For instance:
+                                                - if set to Helm this check will be run after all helm
+                                                charts specified in the ClusterProfile are deployed.
+                                                - if set to Resources this check will be run after the content
+                                                of all the ConfigMaps/Secrets referenced by ClusterProfile in the
+                                                PolicyRef sections is deployed
+                                            enum:
+                                                - Resources
+                                                - Helm
+                                                - Kustomize
+                                            type: string
+                                        group:
+                                            description: Group of the resource to fetch in the managed Cluster.
+                                            type: string
+                                        kind:
+                                            description: Kind of the resource to fetch in the managed Cluster.
+                                            minLength: 1
+                                            type: string
+                                        labelFilters:
+                                            description: LabelFilters allows to filter resources based on current labels.
+                                            items:
+                                                properties:
+                                                    key:
+                                                        description: Key is the label key
+                                                        type: string
+                                                    operation:
+                                                        description: Operation is the comparison operation
+                                                        enum:
+                                                            - Equal
+                                                            - Different
+                                                            - Has
+                                                            - DoesNotHave
+                                                        type: string
+                                                    value:
+                                                        description: Value is the label value
+                                                        type: string
+                                                required:
+                                                    - key
+                                                    - operation
+                                                type: object
+                                            type: array
+                                        name:
+                                            description: Name is the name of this check
+                                            type: string
+                                        namespace:
+                                            description: |-
+                                                Namespace of the resource to fetch in the managed Cluster.
+                                                Empty for resources scoped at cluster level.
+                                            type: string
+                                        script:
+                                            description: |-
+                                                Script is a text containing a lua script.
+                                                Must return struct with field "health"
+                                                representing whether object is a match (true or false)
+                                            type: string
+                                        version:
+                                            description: Version of the resource to fetch in the managed Cluster.
+                                            type: string
+                                    required:
+                                        - featureID
+                                        - group
+                                        - kind
+                                        - name
+                                        - version
+                                    type: object
+                                type: array
+                                x-kubernetes-list-type: atomic
+                            preDeployChecks:
+                                description: |-
+                                    PreDeployChecks is a slice of checks to run against the managed cluster
+                                    *before* Sveltos starts deploying resources.
+                                    Each check can use Lua scripts or CEL expressions to validate the cluster state.
+                                    If any check fails, the deployment of the associated feature is halted.
                                 items:
                                     properties:
                                         evaluateCEL:
@@ -14496,6 +15519,16 @@ spec:
                                                     type: string
                                             type: object
                                             x-kubernetes-map-type: atomic
+                                        watchFields:
+                                            description: |-
+                                                WatchFields is an optional list of dot-separated field paths to include
+                                                when computing the hash for this resource (e.g. "status.readyReplicas",
+                                                "metadata.labels"). When non-empty, only the listed fields are hashed and
+                                                IgnoreStatusChanges is ignored. Use this when you need to react to a
+                                                specific field without being sensitive to every other change on the object.
+                                            items:
+                                                type: string
+                                            type: array
                                     required:
                                         - identifier
                                         - resource
@@ -14521,9 +15554,10 @@ spec:
                                 type: integer
                             validateHealths:
                                 description: |-
-                                    ValidateHealths is a slice of Lua functions to run against
-                                    the managed cluster to validate the state of those add-ons/applications
-                                    is healthy
+                                    ValidateHealths is a slice of checks to run against the managed cluster
+                                    *after* resources are deployed to validate that the state of the
+                                    add-ons/applications is healthy.
+                                    Each check can select resources and validate them using Lua scripts or CEL expressions.
                                 items:
                                     properties:
                                         evaluateCEL:
