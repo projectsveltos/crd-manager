@@ -140,7 +140,7 @@ func processCustomResourceDefinition(ctx context.Context, c client.Client, u *un
 	}
 
 	u.SetResourceVersion(customResourceDefinition.GetResourceVersion())
-	if !isManagedByHelm(u) {
+	if !isManagedByHelm(customResourceDefinition) {
 		logger.V(logs.LogInfo).Info(fmt.Sprintf("updating Sveltos CRD %s", u.GetName()))
 		return c.Update(ctx, u)
 	}
@@ -148,8 +148,8 @@ func processCustomResourceDefinition(ctx context.Context, c client.Client, u *un
 	return nil
 }
 
-func isManagedByHelm(u *unstructured.Unstructured) bool {
-	lbls := u.GetLabels()
+func isManagedByHelm(crd *apiextensionsv1.CustomResourceDefinition) bool {
+	lbls := crd.GetLabels()
 	if lbls == nil {
 		return false
 	}
