@@ -226,6 +226,15 @@ spec:
           status:
             description: ClassifierReportStatus defines the observed state of ClassifierReport
             properties:
+              agentFailureMessage:
+                description: |-
+                  AgentFailureMessage reports the error sveltos-agent hit while evaluating the Classifier
+                  this ClassifierReport is for, if any. Unlike FailureMessage (set in the management cluster
+                  while managing labels from this report), this is set by sveltos-agent itself, in the managed
+                  cluster, when it cannot refresh Spec.Match. Spec is left exactly as it was from the last
+                  successful evaluation while this is set, so label management keeps acting on the last
+                  known-good result instead of a false non-match. Cleared on the next successful evaluation.
+                type: string
               deploymentStatus:
                 description: DeploymentStatus is the current deployment status of
                   the Classifier on the cluster.
@@ -410,6 +419,15 @@ spec:
                         group:
                           description: Group of the resource deployed in the Cluster.
                           type: string
+                        includeDeletingResources:
+                          default: false
+                          description: |-
+                            IncludeDeletingResources indicates whether resources with a non-zero
+                            metadata.deletionTimestamp should still be considered for a match.
+                            By default, such resources are excluded. Set this to true to react
+                            while a resource is being deleted but still exists, for instance to
+                            run cleanup logic before it is fully removed.
+                          type: boolean
                         kind:
                           description: Kind of the resource deployed in the Cluster.
                           minLength: 1
@@ -3047,6 +3065,16 @@ spec:
           status:
             description: EventReportStatus defines the observed state of EventReport
             properties:
+              agentFailureMessage:
+                description: |-
+                  AgentFailureMessage reports the error sveltos-agent hit while evaluating the EventSource
+                  this EventReport is for, if any. Unlike FailureMessage (set in the management cluster while
+                  generating ClusterProfile(s) from this report), this is set by sveltos-agent itself, in the
+                  managed cluster, when it cannot refresh Spec.MatchingResources/Spec.CloudEvents. Spec is left
+                  exactly as it was from the last successful evaluation while this is set, so consumers keep
+                  acting on the last known-good data instead of a false empty result. Cleared on the next
+                  successful evaluation.
+                type: string
               failureMessage:
                 description: |-
                   FailureMessage reports the error hit while generating ClusterProfile(s) from this
@@ -3119,7 +3147,7 @@ spec:
                   This can be useful for more sophisticated tasks, such as identifying resources
                   that are related to each other or that have similar properties.
                   The Lua function must return a struct with:
-                  - "resources" field: slice of matching resorces;
+                  - "resources" field: slice of matching resources;
                   - "message" field: (optional) message.
                 type: string
               collectResources:
@@ -3208,6 +3236,15 @@ spec:
                     group:
                       description: Group of the resource deployed in the Cluster.
                       type: string
+                    includeDeletingResources:
+                      default: false
+                      description: |-
+                        IncludeDeletingResources indicates whether resources with a non-zero
+                        metadata.deletionTimestamp should still be considered for a match.
+                        By default, such resources are excluded. Set this to true to react
+                        while a resource is being deleted but still exists, for instance to
+                        run cleanup logic before it is fully removed.
+                      type: boolean
                     kind:
                       description: Kind of the resource deployed in the Cluster.
                       minLength: 1
@@ -3448,6 +3485,91 @@ spec:
           status:
             description: HealthCheckReportStatus defines the observed state of HealthCheckReport
             properties:
+              agentFailureMessage:
+                description: |-
+                  AgentFailureMessage reports the error sveltos-agent hit while evaluating the HealthCheck
+                  this HealthCheckReport is for, if any. Set by sveltos-agent itself, in the managed cluster,
+                  when it cannot refresh Spec.ResourceStatuses. Spec is left exactly as it was from the last
+                  successful evaluation while this is set. Cleared on the next successful evaluation.
+                type: string
+              pendingResourceStatuses:
+                description: |-
+                  PendingResourceStatuses tracks resources currently observed in a non-Healthy status that
+                  have not yet crossed HealthCheck.Spec.Flapping.ConsecutiveEvaluations. Once a resource's
+                  count reaches the threshold it moves to Spec.ResourceStatuses and is removed here.
+                  Agent-local bookkeeping only: not propagated to the management-cluster copy of this report.
+                items:
+                  description: |-
+                    PendingResourceStatus tracks a resource currently observed in a non-Healthy status that
+                    has not yet crossed HealthCheck.Spec.Flapping.ConsecutiveEvaluations.
+                  properties:
+                    consecutiveCount:
+                      description: |-
+                        ConsecutiveCount is the number of consecutive evaluations HealthStatus
+                        has been observed for this object
+                      format: int32
+                      type: integer
+                    healthStatus:
+                      description: HealthStatus is the status last observed for the
+                        object
+                      enum:
+                      - Healthy
+                      - Progressing
+                      - Degraded
+                      - Suspended
+                      type: string
+                    message:
+                      description: Message is an extra message for human consumption
+                      type: string
+                    objectRef:
+                      description: ObjectRef for which status is reported
+                      properties:
+                        apiVersion:
+                          description: API version of the referent.
+                          type: string
+                        fieldPath:
+                          description: |-
+                            If referring to a piece of an object instead of an entire object, this string
+                            should contain a valid JSON/Go field access statement, such as desiredState.manifest.containers[2].
+                            For example, if the object reference is to a container within a pod, this would take on a value like:
+                            "spec.containers{name}" (where "name" refers to the name of the container that triggered
+                            the event) or if no container name is specified "spec.containers[2]" (container with
+                            index 2 in this pod). This syntax is chosen only to have some well-defined way of
+                            referencing a part of an object.
+                          type: string
+                        kind:
+                          description: |-
+                            Kind of the referent.
+                            More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+                          type: string
+                        name:
+                          description: |-
+                            Name of the referent.
+                            More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                          type: string
+                        namespace:
+                          description: |-
+                            Namespace of the referent.
+                            More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+                          type: string
+                        resourceVersion:
+                          description: |-
+                            Specific resourceVersion to which this reference is made, if any.
+                            More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency
+                          type: string
+                        uid:
+                          description: |-
+                            UID of the referent.
+                            More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids
+                          type: string
+                      type: object
+                      x-kubernetes-map-type: atomic
+                  required:
+                  - consecutiveCount
+                  - healthStatus
+                  - objectRef
+                  type: object
+                type: array
               phase:
                 description: Phase represents the current phase of report.
                 enum:
@@ -3529,6 +3651,23 @@ spec:
                   Set this to true if the Lua script evaluates each resource independently.
                   Set this to false if the Lua script needs to compare all selected resources
                 type: boolean
+              flapping:
+                description: |-
+                  Flapping, when set, delays reporting a resource in a non-Healthy status until the
+                  same status has been observed for ConsecutiveEvaluations consecutive evaluations.
+                  This filters out transient status changes. Recovery to Healthy is always immediate:
+                  a single Healthy evaluation clears any pending count for that resource.
+                properties:
+                  consecutiveEvaluations:
+                    default: 3
+                    description: |-
+                      ConsecutiveEvaluations is the number of consecutive evaluations a resource must be
+                      found in the same non-Healthy status before it is reported in
+                      HealthCheckReport.Spec.ResourceStatuses.
+                    format: int32
+                    minimum: 2
+                    type: integer
+                type: object
               resourceSelectors:
                 description: ResourceSelectors identifies what resources to select
                   to evaluate health
@@ -3572,6 +3711,15 @@ spec:
                     group:
                       description: Group of the resource deployed in the Cluster.
                       type: string
+                    includeDeletingResources:
+                      default: false
+                      description: |-
+                        IncludeDeletingResources indicates whether resources with a non-zero
+                        metadata.deletionTimestamp should still be considered for a match.
+                        By default, such resources are excluded. Set this to true to react
+                        while a resource is being deleted but still exists, for instance to
+                        run cleanup logic before it is fully removed.
+                      type: boolean
                     kind:
                       description: Kind of the resource deployed in the Cluster.
                       minLength: 1
@@ -3903,6 +4051,15 @@ spec:
                     group:
                       description: Group of the resource deployed in the Cluster.
                       type: string
+                    includeDeletingResources:
+                      default: false
+                      description: |-
+                        IncludeDeletingResources indicates whether resources with a non-zero
+                        metadata.deletionTimestamp should still be considered for a match.
+                        By default, such resources are excluded. Set this to true to react
+                        while a resource is being deleted but still exists, for instance to
+                        run cleanup logic before it is fully removed.
+                      type: boolean
                     kind:
                       description: Kind of the resource deployed in the Cluster.
                       minLength: 1
@@ -5314,6 +5471,16 @@ spec:
                 - from
                 - to
                 type: object
+              cleanupGracePeriod:
+                description: |-
+                  CleanupGracePeriod delays removal of the SveltosCluster finalizer after
+                  deletion is requested, keeping the object present (with a non-zero
+                  deletionTimestamp) for this long before it is actually removed.
+                  This is useful when some cleanup needs to happen while the cluster is
+                  still considered registered, for instance running a job that depends
+                  on the SveltosCluster still existing.
+                  If not specified, the finalizer is removed immediately.
+                type: string
               consecutiveFailureThreshold:
                 default: 3
                 description: |-
@@ -5403,6 +5570,15 @@ spec:
                           group:
                             description: Group of the resource deployed in the Cluster.
                             type: string
+                          includeDeletingResources:
+                            default: false
+                            description: |-
+                              IncludeDeletingResources indicates whether resources with a non-zero
+                              metadata.deletionTimestamp should still be considered for a match.
+                              By default, such resources are excluded. Set this to true to react
+                              while a resource is being deleted but still exists, for instance to
+                              run cleanup logic before it is fully removed.
+                            type: boolean
                           kind:
                             description: Kind of the resource deployed in the Cluster.
                             minLength: 1
@@ -5586,6 +5762,15 @@ spec:
                           group:
                             description: Group of the resource deployed in the Cluster.
                             type: string
+                          includeDeletingResources:
+                            default: false
+                            description: |-
+                              IncludeDeletingResources indicates whether resources with a non-zero
+                              metadata.deletionTimestamp should still be considered for a match.
+                              By default, such resources are excluded. Set this to true to react
+                              while a resource is being deleted but still exists, for instance to
+                              run cleanup logic before it is fully removed.
+                            type: boolean
                           kind:
                             description: Kind of the resource deployed in the Cluster.
                             minLength: 1
@@ -5708,14 +5893,18 @@ spec:
                   saName:
                     description: |-
                       SAName is name of the ServiceAccount to renew the token for.
-                      If specified, ServiceAccount must exist in the managed cluster.
-                      If not specified, sveltos will try to deduce it from current kubeconfig
+                      For clusters in push mode, this ServiceAccount must exist in the managed cluster,
+                      and if not specified, sveltos will try to deduce it from the current kubeconfig.
+                      For clusters in pull mode, this ServiceAccount must exist in the management cluster
+                      (sveltosctl creates it there when registering the cluster).
                     type: string
                   saNamespace:
                     description: |-
                       SANamespace is the namespace of the ServiceAccount to renew the token for.
-                      If specified, ServiceAccount must exist in the managed cluster.
-                      If not specified, sveltos will try to deduce it from current kubeconfig
+                      For clusters in push mode, this ServiceAccount must exist in the managed cluster,
+                      and if not specified, sveltos will try to deduce it from the current kubeconfig.
+                      For clusters in pull mode, this ServiceAccount must exist in the management cluster
+                      (sveltosctl creates it there when registering the cluster).
                     type: string
                   tokenDuration:
                     description: |-
@@ -6313,7 +6502,7 @@ spec:
                       type: object
                     type: array
                   resources:
-                    description: Resources indicates what resorces to collect
+                    description: Resources indicates what resources to collect
                     items:
                       description: ResourceSelector defines what resources are a match
                       properties:
@@ -6355,6 +6544,15 @@ spec:
                         group:
                           description: Group of the resource deployed in the Cluster.
                           type: string
+                        includeDeletingResources:
+                          default: false
+                          description: |-
+                            IncludeDeletingResources indicates whether resources with a non-zero
+                            metadata.deletionTimestamp should still be considered for a match.
+                            By default, such resources are excluded. Set this to true to react
+                            while a resource is being deleted but still exists, for instance to
+                            run cleanup logic before it is fully removed.
+                          type: boolean
                         kind:
                           description: Kind of the resource deployed in the Cluster.
                           minLength: 1
@@ -6523,7 +6721,7 @@ spec:
                       type: object
                     type: array
                   resources:
-                    description: Resources indicates what resorces to collect
+                    description: Resources indicates what resources to collect
                     items:
                       description: ResourceSelector defines what resources are a match
                       properties:
@@ -6565,6 +6763,15 @@ spec:
                         group:
                           description: Group of the resource deployed in the Cluster.
                           type: string
+                        includeDeletingResources:
+                          default: false
+                          description: |-
+                            IncludeDeletingResources indicates whether resources with a non-zero
+                            metadata.deletionTimestamp should still be considered for a match.
+                            By default, such resources are excluded. Set this to true to react
+                            while a resource is being deleted but still exists, for instance to
+                            run cleanup logic before it is fully removed.
+                          type: boolean
                         kind:
                           description: Kind of the resource deployed in the Cluster.
                           minLength: 1
@@ -7843,6 +8050,9 @@ spec:
                                                                                     (.tar.gz) of the Kustomize directory
                                                           "oci://"                — OCI registry artifact whose layers are extracted
                                                                                     the same way, preserving the directory tree
+                                                        URL can be expressed as a template and instantiated using any cluster field,
+                                                        so a single profile can fetch different content for each matching cluster,
+                                                        e.g. "oci://registry.example/space/app-{{ .Cluster.metadata.name }}:latest".
                                                     pattern: ^(https?|oci)://
                                                     type: string
                                             required:
@@ -8217,6 +8427,9 @@ spec:
                                                           "oci://"                — OCI registry artifact whose layers are accepted
                                                                                     in the same shapes: raw YAML/JSON, gzip-compressed
                                                                                     YAML/JSON, uncompressed tar, or gzip-compressed tar
+                                                        URL can be expressed as a template and instantiated using any cluster field,
+                                                        so a single profile can fetch different content for each matching cluster,
+                                                        e.g. "oci://registry.example/space/app-{{ .Cluster.metadata.name }}:latest".
                                                     pattern: ^(https?|oci)://
                                                     type: string
                                             required:
@@ -10260,6 +10473,9 @@ spec:
                                                                                             (.tar.gz) of the Kustomize directory
                                                                   "oci://"                — OCI registry artifact whose layers are extracted
                                                                                             the same way, preserving the directory tree
+                                                                URL can be expressed as a template and instantiated using any cluster field,
+                                                                so a single profile can fetch different content for each matching cluster,
+                                                                e.g. "oci://registry.example/space/app-{{ .Cluster.metadata.name }}:latest".
                                                             pattern: ^(https?|oci)://
                                                             type: string
                                                     required:
@@ -10634,6 +10850,9 @@ spec:
                                                                   "oci://"                — OCI registry artifact whose layers are accepted
                                                                                             in the same shapes: raw YAML/JSON, gzip-compressed
                                                                                             YAML/JSON, uncompressed tar, or gzip-compressed tar
+                                                                URL can be expressed as a template and instantiated using any cluster field,
+                                                                so a single profile can fetch different content for each matching cluster,
+                                                                e.g. "oci://registry.example/space/app-{{ .Cluster.metadata.name }}:latest".
                                                             pattern: ^(https?|oci)://
                                                             type: string
                                                     required:
@@ -12068,6 +12287,9 @@ spec:
                                                                                       "oci://"                — OCI registry artifact whose layers are accepted
                                                                                                                 in the same shapes: raw YAML/JSON, gzip-compressed
                                                                                                                 YAML/JSON, uncompressed tar, or gzip-compressed tar
+                                                                                    URL can be expressed as a template and instantiated using any cluster field,
+                                                                                    so a single profile can fetch different content for each matching cluster,
+                                                                                    e.g. "oci://registry.example/space/app-{{ .Cluster.metadata.name }}:latest".
                                                                                 pattern: ^(https?|oci)://
                                                                                 type: string
                                                                         required:
@@ -12487,6 +12709,9 @@ spec:
                                                                                       "oci://"                — OCI registry artifact whose layers are accepted
                                                                                                                 in the same shapes: raw YAML/JSON, gzip-compressed
                                                                                                                 YAML/JSON, uncompressed tar, or gzip-compressed tar
+                                                                                    URL can be expressed as a template and instantiated using any cluster field,
+                                                                                    so a single profile can fetch different content for each matching cluster,
+                                                                                    e.g. "oci://registry.example/space/app-{{ .Cluster.metadata.name }}:latest".
                                                                                 pattern: ^(https?|oci)://
                                                                                 type: string
                                                                         required:
@@ -13790,6 +14015,9 @@ spec:
                                                                                             (.tar.gz) of the Kustomize directory
                                                                   "oci://"                — OCI registry artifact whose layers are extracted
                                                                                             the same way, preserving the directory tree
+                                                                URL can be expressed as a template and instantiated using any cluster field,
+                                                                so a single profile can fetch different content for each matching cluster,
+                                                                e.g. "oci://registry.example/space/app-{{ .Cluster.metadata.name }}:latest".
                                                             pattern: ^(https?|oci)://
                                                             type: string
                                                     required:
@@ -14164,6 +14392,9 @@ spec:
                                                                   "oci://"                — OCI registry artifact whose layers are accepted
                                                                                             in the same shapes: raw YAML/JSON, gzip-compressed
                                                                                             YAML/JSON, uncompressed tar, or gzip-compressed tar
+                                                                URL can be expressed as a template and instantiated using any cluster field,
+                                                                so a single profile can fetch different content for each matching cluster,
+                                                                e.g. "oci://registry.example/space/app-{{ .Cluster.metadata.name }}:latest".
                                                             pattern: ^(https?|oci)://
                                                             type: string
                                                     required:
@@ -16356,6 +16587,9 @@ spec:
                                                                                     (.tar.gz) of the Kustomize directory
                                                           "oci://"                — OCI registry artifact whose layers are extracted
                                                                                     the same way, preserving the directory tree
+                                                        URL can be expressed as a template and instantiated using any cluster field,
+                                                        so a single profile can fetch different content for each matching cluster,
+                                                        e.g. "oci://registry.example/space/app-{{ .Cluster.metadata.name }}:latest".
                                                     pattern: ^(https?|oci)://
                                                     type: string
                                             required:
@@ -16736,6 +16970,9 @@ spec:
                                                           "oci://"                — OCI registry artifact whose layers are accepted
                                                                                     in the same shapes: raw YAML/JSON, gzip-compressed
                                                                                     YAML/JSON, uncompressed tar, or gzip-compressed tar
+                                                        URL can be expressed as a template and instantiated using any cluster field,
+                                                        so a single profile can fetch different content for each matching cluster,
+                                                        e.g. "oci://registry.example/space/app-{{ .Cluster.metadata.name }}:latest".
                                                     pattern: ^(https?|oci)://
                                                     type: string
                                             required:
@@ -17647,6 +17884,18 @@ spec:
                                 format: int32
                                 minimum: 1
                                 type: integer
+                            transitionFrom:
+                                description: |-
+                                    TransitionFrom names the Profiles or ClusterProfiles this instance replaces.
+                                    For matching target clusters, teardown of the replaced profiles is deferred
+                                    until this instance reaches Provisioned. This instance is also permitted to
+                                    adopt resources owned by the replaced profiles, ignoring tier restrictions.
+                                    Same-kind only: a ClusterProfile names other ClusterProfiles, a Profile names
+                                    other Profiles in the same namespace.
+                                items:
+                                    type: string
+                                type: array
+                                x-kubernetes-list-type: atomic
                             validateHealths:
                                 description: |-
                                     ValidateHealths is a slice of Lua functions to run against
@@ -18883,6 +19132,9 @@ spec:
                                                                                     (.tar.gz) of the Kustomize directory
                                                           "oci://"                — OCI registry artifact whose layers are extracted
                                                                                     the same way, preserving the directory tree
+                                                        URL can be expressed as a template and instantiated using any cluster field,
+                                                        so a single profile can fetch different content for each matching cluster,
+                                                        e.g. "oci://registry.example/space/app-{{ .Cluster.metadata.name }}:latest".
                                                     pattern: ^(https?|oci)://
                                                     type: string
                                             required:
@@ -19257,6 +19509,9 @@ spec:
                                                           "oci://"                — OCI registry artifact whose layers are accepted
                                                                                     in the same shapes: raw YAML/JSON, gzip-compressed
                                                                                     YAML/JSON, uncompressed tar, or gzip-compressed tar
+                                                        URL can be expressed as a template and instantiated using any cluster field,
+                                                        so a single profile can fetch different content for each matching cluster,
+                                                        e.g. "oci://registry.example/space/app-{{ .Cluster.metadata.name }}:latest".
                                                     pattern: ^(https?|oci)://
                                                     type: string
                                             required:
