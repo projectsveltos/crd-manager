@@ -20,7 +20,7 @@ var crdsYAML = []byte(`apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: accessrequests.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -158,7 +158,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: classifierreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -299,7 +299,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: classifiers.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -727,7 +727,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: clusterhealthchecks.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -1255,7 +1255,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: clustersets.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -1501,7 +1501,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: configurationbundles.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -1665,7 +1665,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: configurationgroups.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -2951,7 +2951,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: debuggingconfigurations.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3038,7 +3038,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: eventreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3197,7 +3197,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: eventsources.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3450,7 +3450,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: healthcheckreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3687,7 +3687,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: healthchecks.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -3928,7 +3928,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: managementclusterclassifierreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -4034,7 +4034,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: managementclusterclassifiers.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -4281,7 +4281,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: reloaderreports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -4390,7 +4390,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: reloaders.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -4465,7 +4465,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: resourcesummaries.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -5040,7 +5040,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: rolerequests.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -5316,7 +5316,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: sets.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -5562,7 +5562,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: sveltosclusters.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -6351,7 +6351,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: sveltoslicenses.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -6433,7 +6433,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.22.0
+    controller-gen.kubebuilder.io/version: v0.23.0
   name: techsupports.lib.projectsveltos.io
 spec:
   group: lib.projectsveltos.io
@@ -7106,7 +7106,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.22.0
+        controller-gen.kubebuilder.io/version: v0.23.0
     name: clusterconfigurations.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -7381,7 +7381,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.22.0
+        controller-gen.kubebuilder.io/version: v0.23.0
     name: clusterprofiles.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -9963,7 +9963,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.22.0
+        controller-gen.kubebuilder.io/version: v0.23.0
     name: clusterpromotions.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -13137,7 +13137,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.22.0
+        controller-gen.kubebuilder.io/version: v0.23.0
     name: clusterreports.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -13434,7 +13434,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.22.0
+        controller-gen.kubebuilder.io/version: v0.23.0
     name: clustersummaries.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
@@ -16102,7 +16102,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.22.0
+        controller-gen.kubebuilder.io/version: v0.23.0
     name: eventtriggers.lib.projectsveltos.io
 spec:
     group: lib.projectsveltos.io
@@ -16404,6 +16404,52 @@ spec:
                                     ExtraLabels, the value from ExtraLabels will override the existing value.
                                     (Deprecated use Patches instead)
                                 type: object
+                            healthMonitoring:
+                                description: |-
+                                    HealthMonitoring, when enabled, continuously monitors the health of the resources
+                                    this profile deploys in each matching cluster. Unlike ValidateHealths, which are
+                                    evaluated once during deployment, these checks run for as long as the profile
+                                    is deployed. Results are available as HealthCheckReports.
+                                properties:
+                                    defaultChecks:
+                                        default: true
+                                        description: |-
+                                            DefaultChecks, when true (default), monitors the Deployments, StatefulSets, DaemonSets,
+                                            Jobs and PersistentVolumeClaims deployed by this profile (raw resources and Helm charts).
+                                            Set it to false to monitor only the HealthChecks listed in HealthChecks.
+                                        type: boolean
+                                    enabled:
+                                        description: |-
+                                            Enabled turns health monitoring on for the resources deployed by this profile.
+                                            When true, Sveltos creates a HealthCheck and a ClusterHealthCheck for each
+                                            matching cluster once the profile is provisioned there, and removes them
+                                            when monitoring is disabled or the cluster does not match anymore.
+                                        type: boolean
+                                    healthChecks:
+                                        description: |-
+                                            HealthChecks is a list of names of HealthCheck instances to monitor in addition
+                                            to the default checks. Those are deployed as they are: selecting only the
+                                            resources deployed by this profile is up to the HealthCheck.
+
+                                            Only a ClusterProfile can set it. It is ignored for a (namespaced) Profile, which gets the
+                                            default checks only. A HealthCheck is a cluster-scoped resource referenced by name, and the
+                                            report it produces is shared by every profile that references it on a given cluster, with
+                                            no filtering by namespace. Allowing a Profile to reference one would let a tenant name
+                                            a HealthCheck it does not own, and learn about resources outside its namespace through
+                                            the shared report. The default checks are safe for a Profile: they select only the
+                                            resources that profile deployed.
+                                        items:
+                                            type: string
+                                        type: array
+                                        x-kubernetes-list-type: set
+                                required:
+                                    - enabled
+                                type: object
+                                x-kubernetes-validations:
+                                    - message: healthChecks can only be set when enabled is true
+                                      rule: self.enabled || !has(self.healthChecks) || size(self.healthChecks) == 0
+                                    - message: 'defaultChecks cannot be false when healthChecks is empty: there would be nothing to monitor'
+                                      rule: '!self.enabled || !has(self.defaultChecks) || self.defaultChecks || (has(self.healthChecks) && size(self.healthChecks) > 0)'
                             helmCharts:
                                 description: |-
                                     Helm charts to be deployed in the matching clusters based on EventSource.
@@ -16481,6 +16527,21 @@ spec:
                                                                 disable hooks on install
                                                                 Default to false
                                                             type: boolean
+                                                        existingCRDs:
+                                                            default: Fail
+                                                            description: |-
+                                                                ExistingCRDs controls what happens when a CRD in the chart's crds/ directory (subcharts
+                                                                included) already exists in the cluster with a different definition. CRDs not yet in the
+                                                                cluster are always created. Ignored when SkipCRDs is true.
+                                                                Fail fails the installation and reports the CRDs that differ. No CRD is created or changed.
+                                                                Skip leaves the existing CRD as it is, logs it and carries on with the rest of the chart.
+                                                                Overwrite applies the CRD of the chart over the existing one.
+                                                                Default to Fail
+                                                            enum:
+                                                                - Skip
+                                                                - Fail
+                                                                - Overwrite
+                                                            type: string
                                                         recoverAfterConsecutiveFailures:
                                                             default: 5
                                                             description: |-
@@ -18724,7 +18785,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     annotations:
-        controller-gen.kubebuilder.io/version: v0.22.0
+        controller-gen.kubebuilder.io/version: v0.23.0
     name: profiles.config.projectsveltos.io
 spec:
     group: config.projectsveltos.io
